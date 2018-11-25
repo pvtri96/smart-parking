@@ -1,10 +1,10 @@
-import * as Admin from 'firebase-admin';
-import * as Config from './config/certificate';
+import * as Firebase from 'firebase';
+// import * as Config from './config/certificate';
 import { RequestHandler } from './handlers';
 function bootstrap() {
-  Admin.initializeApp({
-    credential: Admin.credential.cert(Config.certification),
-    databaseURL: Config.databaseUrl,
+  Firebase.initializeApp({
+    apiKey: "AIzaSyBoU3Fl8SqbpcG5IuUL7BeTdVey6adZcSM",
+    databaseURL: "https://api-project-211707321887.firebaseio.com/"
   });
 
   RequestHandler.run();

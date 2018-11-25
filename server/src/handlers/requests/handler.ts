@@ -1,10 +1,10 @@
-import * as Admin from 'firebase-admin';
+import * as Firebase from 'firebase';
 import { controllers } from '../../controllers';
 import { RequestStatus } from './type';
 import { isValidRequest, isValidResponse } from './validation';
 
 export function run() {
-  const ref = Admin.database().ref('requests');
+  const ref = Firebase.database().ref('requests');
 
   ref.on('child_added', snapshot => {
     console.log('On child_added', snapshot.val());
@@ -15,7 +15,7 @@ export function run() {
     .equalTo(RequestStatus.REQUESTING)
     .on('child_added', onRequest);
 
-  async function onRequest(snapshot: Admin.database.DataSnapshot) {
+  async function onRequest(snapshot: Firebase.database.DataSnapshot) {
     const request = snapshot.val();
     if (!isValidRequest(request)) {
       console.log(`Invalid request, skip ${snapshot.key}`);

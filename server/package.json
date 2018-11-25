@@ -34,7 +34,7 @@
   "author": "Jakub Synowiec <github@jakubsynowiec.info>",
   "license": "Apache-2.0",
   "dependencies": {
-    "firebase-admin": "^6.2.0",
+    "firebase": "^5.5.9",
     "tslib": "~1.9.3"
   }
 }
