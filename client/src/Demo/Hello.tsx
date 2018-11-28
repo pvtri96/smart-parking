@@ -63,8 +63,7 @@ export class HelloDemo extends React.Component {
     if (!this.state.name) return;
     const request = this.requestRef.push({
       clientId: "RandomString",
-      type: "HELLO_WORLD",
-      status: "requesting",
+      status: "REQUEST_HELLO_WORLD",
       payload: {
         name: this.state.name
       }
@@ -72,9 +71,9 @@ export class HelloDemo extends React.Component {
     request.on("value", snapshot => {
       if (!snapshot) return;
       const result = snapshot.val();
-      if (result.status === "responded" && result.response) {
+      if (result.status === "RESPONSE_HELLO_WORLD" && result.response) {
         this.setState({ result: result.response });
-      } else if (result.status === "responded" && result.error) {
+      } else if (result.status === "RESPONSE_HELLO_WORLD" && result.error) {
         this.setState({ error: result.error });
       } else {
         console.log("REQUESTING", result);
