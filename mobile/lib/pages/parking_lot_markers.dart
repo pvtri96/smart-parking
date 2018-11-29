@@ -11,7 +11,7 @@ import 'package:parking_lots/widgets/drawer.dart';
 import 'parking_lot.dart';
 
 class ParkingLotMarkers extends StatefulWidget {
-  static const String route = '/';
+  static const String route = '/parking_lots';
   static const String mapBoxAccessToken =
       'pk.eyJ1IjoiZHVuZ2xlMTgxMSIsImEiOiJjam93b2NrYXIxdG93M3Fsa3J3MXNjMDFlIn0.paMZmOKnCnZU_NBU3qfxtQ';
 
@@ -203,7 +203,9 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                     icon: Icon(Icons.adjust),
                     color: Colors.blue,
                     iconSize: 35,
-                    onPressed: () {}),
+                    onPressed: () {
+                      // TODO
+                    }),
               )),
     ];
 
@@ -221,16 +223,31 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                 padding: EdgeInsets.only(top: 8, bottom: 8),
                 child: Row(
                   children: <Widget>[
-                    MaterialButton(
-                        child: Text('Get Bounds'),
-                        onPressed: () {
-                          final bounds = mapController.bounds;
+                    ButtonBar(
+                      alignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        RaisedButton(
+                            child: Text('Get bounds'),
+                            onPressed: () {
+                              final bounds = mapController.bounds;
 
-                          _scaffoldKey.currentState.showSnackBar(SnackBar(
-                              content: Text('Map bounds: \n'
-                                  'NE: ${bounds.northEast} \n'
-                                  'SW: ${bounds.southWest}')));
-                        })
+                              _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                  content: Text('Map bounds: \n'
+                                      'NE: ${bounds.northEast} \n'
+                                      'SW: ${bounds.southWest}')));
+                            }),
+                        RaisedButton(
+                            child: Text('Find parking lots'),
+                            onPressed: () {
+                              // TODO: FIND PARKING LOTS AROUND YOU
+                            }),
+                        RaisedButton(
+                            child: Text('My location'),
+                            onPressed: () {
+                              // TODO: BACK TO YOUR CURRENT LOCATION
+                            })
+                      ],
+                    )
                   ],
                 ),
               ),

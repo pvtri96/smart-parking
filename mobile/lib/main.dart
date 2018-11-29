@@ -3,9 +3,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'entity/security-guard.dart';
 import 'pages/current_location.dart';
+import 'pages/home.dart';
 import 'pages/parking_lot_markers.dart';
 import 'pages/security-guard.dart';
-import 'venues.dart';
 
 void main() {
   GoogleMapController.init();
@@ -29,11 +29,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),
-      home: ParkingLotMarkers(),
+      home: Home(),
       routes: <String, WidgetBuilder>{
+        ParkingLotMarkers.route: (context) => ParkingLotMarkers(),
         SecurityGuard.route: (context) => SecurityGuard(securityGuard),
         CurrentLocation.route: (context) => CurrentLocation(),
-        Venues.route: (context) => Venues(),
       },
     );
   }

@@ -1,7 +1,6 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:parking_lots/entity/parking-lot.dart';
-import 'package:parking_lots/widgets/drawer.dart';
 
 class ParkingLot extends StatefulWidget {
   final ParkingLotEntity parkingLotEntity;
@@ -32,7 +31,6 @@ class _ParkingLotState extends State<ParkingLot> {
         appBar: AppBar(
           title: Text('Parking lot: ${widget.parkingLotEntity.name}'),
         ),
-        drawer: buildDrawer(context, route),
         body: Container(
           child: ListView(
             children: <Widget>[
@@ -63,9 +61,31 @@ class _ParkingLotState extends State<ParkingLot> {
                         }),
                     RaisedButton.icon(
                         icon: Icon(Icons.add),
-                        label: Text('I want to park there'),
+                        label: Text('I want to park here'),
                         onPressed: () {
-                          // TODO: BOOK A SLOT
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Booking Confirmation'),
+                                  content: Text(
+                                      "This parking slot will be kept for you within 30 minutes."
+                                      "It will be canceled if you don't check in."),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('Cancel')),
+                                    FlatButton(
+                                        onPressed: () {
+                                          // TODO: CONFIRM BOOKING
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('Confirm'))
+                                  ],
+                                );
+                              });
                         })
                   ],
                 ),
