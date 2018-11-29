@@ -5,53 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
-import 'package:parking_lots/entity/parking-lot.dart';
+import 'package:parking_lots/entity/response.dart';
+import 'package:parking_lots/listeners/application_streams.dart';
+import 'package:parking_lots/services/request_services.dart';
 import 'package:parking_lots/widgets/drawer.dart';
-
-import 'parking_lot.dart';
 
 class ParkingLotMarkers extends StatefulWidget {
   static const String route = '/parking_lots';
   static const String mapBoxAccessToken =
       'pk.eyJ1IjoiZHVuZ2xlMTgxMSIsImEiOiJjam93b2NrYXIxdG93M3Fsa3J3MXNjMDFlIn0.paMZmOKnCnZU_NBU3qfxtQ';
-
-  final parkingLots = <ParkingLotEntity>[
-    ParkingLotEntity(
-      name: 'Parking lot 1',
-      lat: 16.043658,
-      lng: 108.240327,
-      totalSlots: 20,
-      availableSlots: 2,
-    ),
-    ParkingLotEntity(
-      name: 'Parking lot 2',
-      lat: 16.044060,
-      lng: 108.239898,
-      totalSlots: 20,
-      availableSlots: 10,
-    ),
-    ParkingLotEntity(
-      name: 'Parking lot 3',
-      lat: 16.036360,
-      lng: 108.229392,
-      totalSlots: 20,
-      availableSlots: 10,
-    ),
-    ParkingLotEntity(
-      name: 'Parking lot 4',
-      lat: 16.044596,
-      lng: 108.239694,
-      totalSlots: 20,
-      availableSlots: 7,
-    ),
-    ParkingLotEntity(
-      name: 'Parking lot 5',
-      lat: 16.043606,
-      lng: 108.244254,
-      totalSlots: 20,
-      availableSlots: 10,
-    )
-  ];
 
   @override
   _ParkingLotMarkersState createState() => _ParkingLotMarkersState();
@@ -59,6 +21,9 @@ class ParkingLotMarkers extends StatefulWidget {
 
 class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final RequestService _requestService = RequestService();
+  final StreamController<List<Marker>> _markerStream = StreamController();
+
   MapController mapController;
   Map<String, double> currentLocation = Map();
   Location location = Location();
@@ -70,8 +35,35 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
   void initState() {
     super.initState();
     mapController = MapController();
-//    _initPlatformState().then((response) => setState(
-//    ));
+    _registerStream();
+    _initPlatformState().then((location) {
+      _requestService.findParkingLot('', location['lat'], location['lng']);
+    });
+  }
+
+  _registerStream() {
+    ApplicationStreams.onResponseFindingParkingLot.stream.listen((Response response) {
+      List<Marker> result = List();
+      response.parkingLots.forEach((parkingLot) {
+        Marker marker = Marker(
+          width: 35,
+          height: 35,
+          point: LatLng(parkingLot.location.lat, parkingLot.location.lng),
+          builder: (context) =>
+            Container(
+              child: IconButton(
+                icon: Icon(Icons.location_on),
+                color: Colors.red,
+                iconSize: 35,
+                onPressed: () {
+                  print('Marker ${parkingLot.name} pressed');
+                }),
+        ));
+        result.add(marker);
+      });
+
+      _markerStream.add(result);
+    });
   }
 
   _updatePosition() {
@@ -87,6 +79,7 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
   void dispose() {
     super.dispose();
     _timer.cancel();
+    _markerStream.close();
   }
 
   Future<Map<String, double>> _initPlatformState() async {
@@ -108,107 +101,6 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
 
   @override
   Widget build(BuildContext context) {
-    var markers = <Marker>[
-      Marker(
-          width: 35,
-          height: 35,
-          point: LatLng(widget.parkingLots[0].lat, widget.parkingLots[0].lng),
-          builder: (context) => Container(
-                child: IconButton(
-                    icon: Icon(Icons.location_on),
-                    color: Colors.red,
-                    iconSize: 35,
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ParkingLot(widget.parkingLots[0])));
-                    }),
-              )),
-      Marker(
-          width: 35,
-          height: 35,
-          point: LatLng(widget.parkingLots[1].lat, widget.parkingLots[1].lng),
-          builder: (context) => Container(
-                child: IconButton(
-                    icon: Icon(Icons.location_on),
-                    color: Colors.red,
-                    iconSize: 35,
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ParkingLot(widget.parkingLots[1])));
-                    }),
-              )),
-      Marker(
-          width: 35,
-          height: 35,
-          point: LatLng(widget.parkingLots[2].lat, widget.parkingLots[2].lng),
-          builder: (context) => Container(
-                child: IconButton(
-                    icon: Icon(Icons.location_on),
-                    color: Colors.red,
-                    iconSize: 35,
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ParkingLot(widget.parkingLots[2])));
-                    }),
-              )),
-      Marker(
-          width: 35,
-          height: 35,
-          point: LatLng(widget.parkingLots[3].lat, widget.parkingLots[3].lng),
-          builder: (context) => Container(
-                child: IconButton(
-                    icon: Icon(Icons.location_on),
-                    color: Colors.red,
-                    iconSize: 35,
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ParkingLot(widget.parkingLots[3])));
-                    }),
-              )),
-      Marker(
-          width: 35,
-          height: 35,
-          point: LatLng(widget.parkingLots[4].lat, widget.parkingLots[4].lng),
-          builder: (context) => Container(
-                child: IconButton(
-                    icon: Icon(Icons.location_on),
-                    color: Colors.red,
-                    iconSize: 35,
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ParkingLot(widget.parkingLots[4])));
-                    }),
-              )),
-      Marker(
-          width: 35,
-          height: 35,
-          point: LatLng(16.041967, 108.241014),
-          builder: (context) => Container(
-                child: IconButton(
-                    icon: Icon(Icons.adjust),
-                    color: Colors.blue,
-                    iconSize: 35,
-                    onPressed: () {
-                      // TODO
-                    }),
-              )),
-    ];
-
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -238,8 +130,8 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                             }),
                         RaisedButton(
                             child: Text('Find parking lots'),
-                            onPressed: () {
-                              // TODO: FIND PARKING LOTS AROUND YOU
+                            onPressed: () async {
+                              await _initPlatformState();
                             }),
                         RaisedButton(
                             child: Text('My location'),
@@ -251,28 +143,34 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                   ],
                 ),
               ),
-              Flexible(
-                child: FlutterMap(
-                  mapController: mapController,
-                  options: MapOptions(
-                      center: LatLng(16.041926, 108.241036),
-                      zoom: 15,
-                      onPositionChanged: (position, hasGesture) {
-                        _updatePosition();
-                      }),
-                  layers: [
-                    TileLayerOptions(
-                      urlTemplate:
+              StreamBuilder(
+                stream: _markerStream.stream,
+                builder: (context, snapShot) {
+                  List<Marker> markers = snapShot.data ?? List();
+                  return Flexible(
+                    child: FlutterMap(
+                      mapController: mapController,
+                      options: MapOptions(
+                          center: LatLng(16.041926, 108.241036),
+                          zoom: 15,
+                          onPositionChanged: (position, hasGesture) {
+                            _updatePosition();
+                          }),
+                      layers: [
+                        TileLayerOptions(
+                          urlTemplate:
                           'https://api.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}',
-                      additionalOptions: {
-                        'accessToken': ParkingLotMarkers.mapBoxAccessToken,
-                        'id': 'mapbox.streets',
-                      },
+                          additionalOptions: {
+                            'accessToken': ParkingLotMarkers.mapBoxAccessToken,
+                            'id': 'mapbox.streets',
+                          },
+                        ),
+                        MarkerLayerOptions(markers: markers)
+                      ],
                     ),
-                    MarkerLayerOptions(markers: markers)
-                  ],
-                ),
-              )
+                  );
+                },
+              ),
             ],
           ),
         ));
