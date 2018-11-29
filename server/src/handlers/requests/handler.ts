@@ -18,10 +18,17 @@ export function run() {
     console.log(`Retrieve a request ${snapshot.key}`);
 
     for (const descriptor of requestDescriptors) {
-      if (descriptor.statusType.match(request.status) && descriptor.isValidRequest(request)) {
+      if (descriptor.statusType.match(request.status)) {
         console.log(`Found a handler function for request ${snapshot.key}. Execute...`, request);
         try {
+          if(!descriptor.isValidRequest(request)) {
+            console.log(`The request does not meet the requirement of handler, find another handler`, request);
+            (request as Request).error = new Error("The request does not meet the requirement of handler");
+            continue;
+          }
           request = await descriptor.handle(request as Request<any,any,any>); // tslint:disable-line
+          // Remove error object if request handle successful
+          delete request.error;
           console.log(`Successfully handle request ${snapshot.key}`, request);
         } catch (e) {
           request.error = e;

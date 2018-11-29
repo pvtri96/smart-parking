@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import * as React from "react";
 import HelloDemo from "../Demo/Hello";
+import FindParkingLots from "../Demo/FindParkingLots";
 
 const styles = ({ spacing }: Theme) =>
   createStyles({
@@ -41,6 +42,9 @@ function DenseAppBar(props: Props) {
       <Grid container spacing={16} className={classes.container}>
         <Grid item xs={4}>
           <HelloDemo />
+        </Grid>
+        <Grid item xs={4}>
+          <FindParkingLots />
         </Grid>
       </Grid>
     </div>

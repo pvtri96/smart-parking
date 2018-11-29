@@ -1,16 +1,3 @@
-
-
-interface RequestFindParkingPayload {
-  currentLocation: {
-    lat: string;
-    lng: string;
-  }
-}
-
-interface RequestFindParkingResponse {
-  parkingLots: ParkingLot[]
-}
-
 interface RequestBookParkingPayload {
   parkingLotsId: string;
 }

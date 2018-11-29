@@ -1,6 +1,5 @@
 import { RequestStatus } from './status';
 
-// tslint:disable no-any
 export interface Request<TPayload = any, TResponse = any, TData = any> {
   clientId: string;
   status: RequestStatus;
@@ -11,7 +10,7 @@ export interface Request<TPayload = any, TResponse = any, TData = any> {
 }
 
 
-export function requestTypeCreator<OldPayload = any, OldResponse = any, OldData = any, NewPayload = any, NewResponse = any, NewData = any>(
+export function requestTypeCreator<OldPayload = any, NewResponse = any, NewData = any, OldResponse = any, OldData = any, NewPayload = any>(
   statusType: string,
   handle: RequestHandlerFunction<OldPayload, OldResponse, OldData, NewPayload, NewResponse, NewData>,
   isValidRequest: IsValidRequestFunction<OldPayload, OldResponse, OldData> = defaultIsValidOldRequest
@@ -39,4 +38,3 @@ export type IsValidRequestFunction<TPayload = any, TResponse = any, TData = any>
 function defaultIsValidOldRequest(_: Request<any, any, any>): _ is Request<any, any, any> {
   return true
 }
-// tslint:enable no-any

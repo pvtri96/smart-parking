@@ -1,26 +1,20 @@
 import * as Firebase from 'firebase';
-// import * as Config from './config/certificate';
+import * as FirebaseConfig from './config/firebase';
 import { RequestHandler } from './handlers';
+import { getMatrixDistance } from './services/googleMap';
+
 function bootstrap() {
   Firebase.initializeApp({
-    apiKey: "AIzaSyBoU3Fl8SqbpcG5IuUL7BeTdVey6adZcSM",
-    databaseURL: "https://api-project-211707321887.firebaseio.com/"
+    apiKey: FirebaseConfig.apiKey,
+    databaseURL: FirebaseConfig.databaseUrl
   });
 
   RequestHandler.run();
 
-  // const request = Admin.database().ref('requests');
-
-  // setTimeout(() => {
-  //   request.push({
-  //     clientId: '19287328',
-  //     status: 'requesting',
-  //     type: 'HELLO_WORLD',
-  //     payload: {
-  //       name: 'Tri',
-  //     },
-  //   });
-  // }, 2000);
+  getMatrixDistance({ lat: 16.0702948, lng: 108.2174617 }, [
+    { lat: 16.0741673, lng: 108.2112121 },
+    { lat: 16.0744083, lng: 108.207111 }
+  ])
 }
 
 bootstrap();

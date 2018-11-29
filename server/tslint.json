@@ -9,8 +9,10 @@
     "tslint-config-prettier"
   ],
   "rules": {
+    "no-any": false,
     "no-console": false,
     "no-empty-interface": false,
+    "no-suspicious-comment": false,
     "variable-name": false,
     "interface-name": false,
     "mocha-no-side-effect-code": false,
