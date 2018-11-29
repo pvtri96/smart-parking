@@ -15,18 +15,19 @@ function bootstrap() {
     lat: number;
     lng: number;
     capacity: number;
+    address: string;
   }[] = JSON.parse(
     Fs.readFileSync(
       Path.join(process.cwd(), 'data', 'parkingLots.json'),
     ).toString(),
   );
 
-  rawData.map<ParkingLot>(({ name, lat, lng, capacity }) => ({
+  rawData.map<ParkingLot>(({ name, lat, lng, address, capacity }) => ({
     name,
     location: {
       lat,
       lng,
-      address: ""
+      address
     },
     capacity,
     pendingRequest: [],

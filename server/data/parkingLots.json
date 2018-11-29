@@ -1,0 +1,142 @@
+[
+  {
+    "name": "Thuan Phuoc",
+    "lat": 16.0884052,
+    "lng": 108.2178329,
+    "capacity": 9,
+    "address": "Thuan Phuoc, Hai Chau, Da Nang"
+  },
+  {
+    "name": "Cao Thang",
+    "lat": 16.0772654,
+    "lng": 108.2128747,
+    "capacity": 12,
+    "address": "Thanh Binh, Hai Chau, Da Nang"
+  },
+  {
+    "name": "Cho Han",
+    "lat": 16.0714534,
+    "lng": 108.2209354,
+    "capacity": 43,
+    "address": "Tran Phu, Hai Chau, Da Nang"
+  },
+  {
+    "name": "Lotte",
+    "lat": 16.0309537,
+    "lng": 108.2204257,
+    "capacity": 23,
+    "address": "Hoa Cuong Bac, Hai Chau, Da Nang"
+  },
+  {
+    "name": "Ngu Hanh Son",
+    "lat": 16.0057412,
+    "lng": 108.2479007,
+    "capacity": 16,
+    "address": "Hoa Hai, Ngu Hanh Son, Da Nang"
+  },
+  {
+    "name": "Mieu Bong",
+    "lat": 15.9820175,
+    "lng": 108.212231,
+    "capacity": 20,
+    "address": "Hoa Xuan, Hoa Vang, Da Nang"
+  },
+  {
+    "name": "Ga Da Nang",
+    "lat": 16.0689463,
+    "lng": 108.2100729,
+    "capacity": 24,
+    "address": "Tam Thuan,Thanh Khe, Da Nang"
+  },
+  {
+    "name": "Phuong Dong",
+    "lat": 16.0822201,
+    "lng": 108.2195729,
+    "capacity": 20,
+    "address": "Thuan Phuoc, Hai Chau, Da Nang"
+  },
+  {
+    "name": "San Bay DN",
+    "lat": 16.0569438,
+    "lng": 108.2035043,
+    "capacity": 25,
+    "address": "Hoa Thuan Tay, Hai Chau, Da Nang"
+  },
+  {
+    "name": "KCN Hoa Khanh",
+    "lat": 16.0855219,
+    "lng": 108.1337337,
+    "capacity": 40,
+    "address": "Hoa Khanh Bac, Lien Chieu, Da Nang"
+  },
+  {
+    "name": "Bai Chay",
+    "lat": 16.0984069,
+    "lng": 108.2697737,
+    "capacity": 45,
+    "address": "Bai Chay, Son Tra, Da Nang"
+  },
+  {
+    "name": "An Don",
+    "lat": 16.0732524,
+    "lng": 108.2335776,
+    "capacity": 30,
+    "address": "An Hai Bac, Son Tra, Da Nang"
+  },
+  {
+    "name": "Buu Cuc DN",
+    "lat": 16.0549338,
+    "lng": 108.2344316,
+    "capacity": 35,
+    "address": "An Hai Tay, Son Tra, Da Nang"
+  },
+  {
+    "name": "Furama",
+    "lat": 16.0406986,
+    "lng": 108.2498449,
+    "capacity": 46,
+    "address": "Khue My, Ngu Hanh Son, Da Nang"
+  },
+  {
+    "name": "Hoa Quy",
+    "lat": 16.0092577,
+    "lng": 108.2425434,
+    "capacity": 23,
+    "address": "Hoa Quy, Ngu Hanh Son, Da Nang"
+  },
+  {
+    "name": "Hoa Xuan",
+    "lat": 16.0061674,
+    "lng": 108.2224887,
+    "capacity": 34,
+    "address": "Hoa Xuan, Cam Le, Da Nang"
+  },
+  {
+    "name": "Cam Le",
+    "lat": 16.0108751,
+    "lng": 108.1935283,
+    "capacity": 54,
+    "address": "Hoa Tho Dong, Cam Le, Da Nang"
+  },
+  {
+    "name": "Nam O",
+    "lat": 16.1000296,
+    "lng": 108.1334002,
+    "capacity": 23,
+    "address": "Hoa Hiep Nam, Lien Chieu, Da Nang"
+  },
+  {
+    "name": "Bao Tang DN",
+    "lat": 16.075182,
+    "lng": 108.2193029,
+    "capacity": 51,
+    "address": "Thach Thang, Hai Chau, Da Nang"
+  },
+  {
+    "name": "Cong Vien 293",
+    "lat": 16.0687244,
+    "lng": 108.2057095,
+    "capacity": 36,
+    "address": "Thac Gian, Thanh Khe, Da Nang"
+  }
+]
