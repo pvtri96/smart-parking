@@ -37,7 +37,7 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
     mapController = MapController();
     _registerStream();
     _initPlatformState().then((location) {
-      _requestService.findParkingLot('', location['lat'], location['lng']);
+      _requestService.findParkingLot('', location['latitude'], location['longitude']);
     });
   }
 
