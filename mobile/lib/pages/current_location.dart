@@ -1,10 +1,7 @@
 //AIzaSyB8L-qiCC0pPlz1CnBav1BwcBkpD8oV6c8
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:http/http.dart' as http;
 import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
 import 'package:parking_lots/widgets/drawer.dart';
@@ -90,27 +87,5 @@ class CurrentLocationState extends State<CurrentLocation> {
     setState(() {
       currentLocation = myLocation;
     });
-    print('LOCATION: $myLocation');
-    getRoute();
-  }
-
-  void getRoute() async {
-    setState(() {
-      isLoading = true;
-    });
-    var start = [-122.42, 37.78];
-    var end = [-77.03, 38.91];
-    var destinationRequest =
-        'https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}'
-        '?access_token=${CurrentLocation.mapBoxAccessToken}';
-    final response = await http.get(destinationRequest);
-    try {
-      print(jsonDecode(response.body));
-      setState(() {
-        isLoading = false;
-      });
-    } catch (e) {
-      print('Failed to load direction');
-    }
   }
 }

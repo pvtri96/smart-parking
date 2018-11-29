@@ -2,10 +2,10 @@ import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:parking_lots/widgets/drawer.dart';
 
-import 'location.dart';
+import 'customized-location.dart';
 
 class VenueDetails extends StatefulWidget {
-  final Location location;
+  final CustomizedLocation location;
   final ValueChanged<bool> onChanged;
 
   VenueDetails(this.location, this.onChanged);
@@ -17,8 +17,6 @@ class VenueDetails extends StatefulWidget {
 class _VenueDetailState extends State<VenueDetails> {
   void _launchNavigationInGoogleMaps() {
     if (Theme.of(context).platform == TargetPlatform.android) {
-      print('WIDGET: ${widget.location.lat}');
-      //16.043658
       final AndroidIntent intent = AndroidIntent(
           action: 'action_view',
           data:
