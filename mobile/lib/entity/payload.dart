@@ -2,14 +2,22 @@ import 'location.dart';
 
 class Payload {
   Location location;
+  String parkingLotId;
 
   Payload({
-    this.location
+    this.location,
+    this.parkingLotId
   });
 
   toJson() {
     return {
       "location": this.location.toJson()
+    };
+  }
+
+  toBookParkingJson() {
+    return {
+      "parkingLotId": this.parkingLotId
     };
   }
 

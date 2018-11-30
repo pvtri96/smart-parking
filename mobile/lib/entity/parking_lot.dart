@@ -3,6 +3,7 @@ import 'duration.dart';
 import 'distance.dart';
 
 class ParkingLot {
+  String id;
   int capacity;
   String name;
   Location location;

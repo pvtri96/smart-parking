@@ -24,9 +24,8 @@ class RequestRepository {
     return request;
   }
 
-  Future<Request> updateRequest(Request request) async{
-    await databaseRef.child(request.id).update(request.toJson());
-    return request;
+  Future<void> updateRequest(String id, Map<dynamic, dynamic> updateData) async{
+    await databaseRef.child(id).update(updateData);
   }
 
   _handleUpdateEvent(DataSnapshot snapShot) {

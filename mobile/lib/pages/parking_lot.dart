@@ -1,6 +1,7 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:parking_lots/entity/parking_lot.dart';
+import 'package:parking_lots/services/request_services.dart';
 
 class ParkingLotScreen extends StatefulWidget {
   final ParkingLot parkingLot;
@@ -13,6 +14,8 @@ class ParkingLotScreen extends StatefulWidget {
 
 class _ParkingLotScreenState extends State<ParkingLotScreen> {
   static const String route = '/parking_lot_info';
+
+  final RequestService _requestService = RequestService();
 
   void _launchNavigationInGoogleMaps() {
     if (Theme.of(context).platform == TargetPlatform.android) {
@@ -73,8 +76,8 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
                                         },
                                         child: Text('Cancel')),
                                     FlatButton(
-                                        onPressed: () {
-                                          // TODO: CONFIRM BOOKING
+                                        onPressed: () async {
+                                          await _requestService.bookParkingLot(widget.parkingLot.id);
                                           Navigator.of(context).pop();
                                         },
                                         child: Text('Confirm'))

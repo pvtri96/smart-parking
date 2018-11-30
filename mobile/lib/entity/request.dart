@@ -21,6 +21,15 @@ class Request {
     };
   }
 
+  toRequestBookingJson() {
+    return {
+      "clientId": this.clientId,
+      "status": this.status,
+      "payload": this.payload != null ? this.payload.toBookParkingJson() : '',
+      "response": this.response != null ? this.response.toJson() : ''
+    };
+  }
+
   factory Request.fromMap(Map<dynamic, dynamic> data, String key) {
     return Request(
       data['clientId'].toString(),

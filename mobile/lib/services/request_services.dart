@@ -1,4 +1,5 @@
 import 'package:parking_lots/enum/status.dart';
+import 'package:parking_lots/listeners/application_streams.dart';
 import 'package:parking_lots/repository/request_repository.dart';
 import 'package:parking_lots/entity/location.dart';
 import 'package:parking_lots/entity/request.dart';
@@ -19,12 +20,22 @@ class RequestService {
 
     if (reFind) {
       requestFindParkingLot.id = requestId;
-      requestFindParkingLot = await _requestRepository.updateRequest(requestFindParkingLot);
+      await _requestRepository.updateRequest(requestId, requestFindParkingLot.toJson());
     } else {
       requestFindParkingLot =
       await _requestRepository.saveAndSubscribeRequest(requestFindParkingLot);
     }
 
     return requestFindParkingLot;
+  }
+
+  Future<Request> bookParkingLot(String parkingLotId) async{
+    Request request = ApplicationStreams.currentRequest;
+    request.status = Status.REQUEST_BOOK_PARKING_LOT;
+    request.payload = Payload(parkingLotId: parkingLotId);
+
+    await _requestRepository.updateRequest(request.id, request.toRequestBookingJson());
+
+    return request;
   }
 }
