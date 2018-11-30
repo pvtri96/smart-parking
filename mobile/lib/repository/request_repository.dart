@@ -34,12 +34,14 @@ class RequestRepository {
 
     if (key == 'response') {
       if (currentStatus == Status.REQUEST_FIND_PARKING_LOT) {
-        List parkingLots = snapShot.value['parkingLots'];
-        Map<dynamic, dynamic> parkingLotsMap = Map();
-        parkingLots.forEach((map) {
-          parkingLotsMap[map['id']] = map;
-        });
-        _response = Response.fromMap(parkingLotsMap);
+        if (snapShot.value != '') {
+          List parkingLots = snapShot.value['parkingLots'];
+          Map<dynamic, dynamic> parkingLotsMap = Map();
+          parkingLots.forEach((map) {
+            parkingLotsMap[map['id']] = map;
+          });
+          _response = Response.fromMap(parkingLotsMap);
+        }
       }
     }
 

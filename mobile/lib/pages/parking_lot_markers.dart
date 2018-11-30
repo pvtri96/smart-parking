@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
+import 'package:parking_lots/entity/request.dart';
 import 'package:parking_lots/entity/response.dart';
 import 'package:parking_lots/listeners/application_streams.dart';
 import 'package:parking_lots/pages/parking_lot.dart';
@@ -25,6 +26,7 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
   final RequestService _requestService = RequestService();
   final StreamController<List<Marker>> _markerStream = StreamController();
 
+  Request _currentRequest;
   MapController mapController;
   Map<String, double> currentLocation = Map();
   Location location = Location();
@@ -38,7 +40,9 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
     mapController = MapController();
     _registerStream();
     _initPlatformState().then((location) {
-      _requestService.findParkingLot('', location['latitude'], location['longitude']);
+      _requestService.findParkingLot('', location['latitude'], location['longitude']).then((request) {
+        this._currentRequest = request;
+      });
     });
   }
 
@@ -139,7 +143,9 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                             child: Text('Find parking lots'),
                             onPressed: () {
                               _initPlatformState().then((location) {
-                                _requestService.findParkingLot('', location['latitude'], location['longitude']);
+                                _requestService.findParkingLot('', location['latitude'], location['longitude'], reFind: true, requestId: this._currentRequest.id).then((request) {
+                                  this._currentRequest = request;
+                                });
                               });
                             }),
                         RaisedButton(
