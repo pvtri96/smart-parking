@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parking_lots/pages/parking_lot_markers.dart';
 
 class Home extends StatefulWidget {
   static const String route = '/';
@@ -42,7 +43,7 @@ class _HomeState extends State<Home> {
                 RaisedButton(
                     child: Text('Driver'),
                     onPressed: () {
-                      // TODO: ACCESS TO THE APPLICATION WITH DRIVER
+                      Navigator.of(context).pushNamed(ParkingLotMarkers.route);
                     })
               ],
             )
