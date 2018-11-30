@@ -12,7 +12,7 @@ class RequestRepository {
     await databaseRef.child(key).set(request.toJson());
     request.id = key;
     
-    databaseRef.child(key).onChildChanged.listen((Event event) {
+    ApplicationStreams.onRequestChildUpdateSubscription = databaseRef.child(key).onChildChanged.listen((Event event) {
       _handleUpdateEvent(event.snapshot);
     });
     
