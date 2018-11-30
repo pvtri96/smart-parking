@@ -80,6 +80,8 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
     super.dispose();
     _timer.cancel();
     _markerStream.close();
+    ApplicationStreams.onRequestChildUpdateSubscription.cancel();
+    ApplicationStreams.onResponseFindingParkingLot.close();
   }
 
   Future<Map<String, double>> _initPlatformState() async {
@@ -132,7 +134,7 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                             child: Text('Find parking lots'),
                             onPressed: () {
                               _initPlatformState().then((location) {
-                                _requestService.findParkingLot('', location['latitude'], location['longitude'], reFind: true);
+                                _requestService.findParkingLot('', location['latitude'], location['longitude']);
                               });
                             }),
                         RaisedButton(
@@ -149,12 +151,15 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                 stream: _markerStream.stream,
                 builder: (context, snapShot) {
                   List<Marker> markers = snapShot.data ?? List();
+                  if (markers.isEmpty) {
+                    return Flexible(child: CircularProgressIndicator());
+                  }
                   return Flexible(
                     child: FlutterMap(
                       mapController: mapController,
                       options: MapOptions(
                           center: LatLng(16.041926, 108.241036),
-                          zoom: 15,
+                          zoom: 14,
                           onPositionChanged: (position, hasGesture) {
                             _updatePosition();
                           }),
