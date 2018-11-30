@@ -7,6 +7,7 @@ export function run() {
   const ref = Firebase.database().ref('requests');
 
   ref.on('child_added', onRequest);
+  ref.on('child_changed', onRequest);
 
   async function onRequest(snapshot: Firebase.database.DataSnapshot) {
     let request = snapshot.val();
@@ -23,10 +24,10 @@ export function run() {
         try {
           if(!descriptor.isValidRequest(request)) {
             console.log(`The request does not meet the requirement of handler, find another handler`, request);
-            (request as Request).error = new Error("The request does not meet the requirement of handler");
+            request.error = new Error("The request does not meet the requirement of handler");
             continue;
           }
-          request = await descriptor.handle(request as Request<any,any,any>); // tslint:disable-line
+          request = await descriptor.handle(request as Request<any,any,any>, snapshot.key); // tslint:disable-line
           // Remove error object if request handle successful
           delete request.error;
           console.log(`Successfully handle request ${snapshot.key}`, request);
@@ -37,10 +38,6 @@ export function run() {
         break;
       }
     }
-    if (DefaultValidation.isValidResponse(request)) {
-      ref.child(snapshot.key).set(request);
-    } else {
-      console.log(`Invalid response, skip request ${snapshot.key}`, request);
-    }
+    ref.child(snapshot.key).set(request);
   }
 }

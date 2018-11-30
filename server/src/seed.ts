@@ -2,9 +2,9 @@ import * as Firebase from 'firebase';
 import * as Fs from 'fs';
 import * as Path from 'path';
 import * as FirebaseConfig from './config/firebase';
-import { ParkingLot } from './entities';
+import { FirebaseParkingLot } from './entities';
 
-function bootstrap() {
+async function bootstrap() {
   Firebase.initializeApp({
     apiKey: FirebaseConfig.apiKey,
     databaseURL: FirebaseConfig.databaseUrl,
@@ -22,19 +22,29 @@ function bootstrap() {
     ).toString(),
   );
 
-  rawData.map<ParkingLot>(({ name, lat, lng, address, capacity }) => ({
-    name,
-    location: {
-      lat,
-      lng,
-      address
-    },
-    capacity,
-    pendingRequest: [],
-    parkingRequest: []
-  })).forEach(parkingLot => {
-    Firebase.database().ref("parkingLots").push(parkingLot);
-  })
+  await Promise.all(
+    rawData
+      .map<FirebaseParkingLot>(({ name, lat, lng, address, capacity }) => ({
+        name,
+        location: {
+          lat,
+          lng,
+          address,
+        },
+        capacity,
+        pendingRequest: [],
+        parkingRequest: [],
+      }))
+      .map(parkingLot => {
+        return new Promise(resolve => {
+          Firebase.database()
+            .ref('parkingLots')
+            .push(parkingLot, resolve);
+        });
+      }),
+  );
+
+  process.exit();
 }
 
 bootstrap();

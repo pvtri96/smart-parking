@@ -13,7 +13,7 @@ export interface Request<TPayload = any, TResponse = any, TData = any> {
 export function requestTypeCreator<OldPayload = any, NewResponse = any, NewData = any, OldResponse = any, OldData = any, NewPayload = any>(
   statusType: string,
   handle: RequestHandlerFunction<OldPayload, OldResponse, OldData, NewPayload, NewResponse, NewData>,
-  isValidRequest: IsValidRequestFunction<OldPayload, OldResponse, OldData> = defaultIsValidOldRequest
+  isValidRequest: IsValidRequestFunction<OldPayload, OldResponse, OldData> = () => true
 ): RequestDescriptor<OldPayload, OldResponse, OldData, NewPayload, NewResponse, NewData> {
   return {
     statusType,
@@ -25,16 +25,11 @@ export function requestTypeCreator<OldPayload = any, NewResponse = any, NewData 
 export interface RequestDescriptor<OldPayload = any, OldResponse = any, OldData = any, NewPayload = any, NewResponse = any, NewData = any> {
   statusType: string;
   handle: RequestHandlerFunction<OldPayload, OldResponse, OldData, NewPayload, NewResponse, NewData>;
-  isValidRequest: IsValidRequestFunction<OldPayload, OldResponse, OldData>
-}
+  isValidRequest: IsValidRequestFunction<OldPayload, OldResponse, OldData>}
 
-export type RequestHandlerFunction< OldPayload = any, OldResponse = any, OldData = any, NewPayload = any, NewResponse = any, NewData = any> = (
+export type RequestHandlerFunction<OldPayload = any, OldResponse = any, OldData = any, NewPayload = any, NewResponse = any, NewData = any> = (
   request: Request<OldPayload, OldResponse, OldData>,
+  requestId: string
 ) => Promise<Request<NewPayload, NewResponse, NewData>>;
 
-export type IsValidRequestFunction<TPayload = any, TResponse = any, TData = any> =
-  (request: Request<any, any, any>) => request is Request<TPayload, TResponse, TData>;
-
-function defaultIsValidOldRequest(_: Request<any, any, any>): _ is Request<any, any, any> {
-  return true
-}
+export type IsValidRequestFunction<TPayload = any, TResponse = any, TData = any> = (request: Request<TPayload, TResponse, TData>) => boolean;
