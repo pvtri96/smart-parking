@@ -7,6 +7,7 @@ import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
 import 'package:parking_lots/entity/response.dart';
 import 'package:parking_lots/listeners/application_streams.dart';
+import 'package:parking_lots/pages/parking_lot.dart';
 import 'package:parking_lots/services/request_services.dart';
 import 'package:parking_lots/widgets/drawer.dart';
 
@@ -56,7 +57,11 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                 color: Colors.red,
                 iconSize: 35,
                 onPressed: () {
-                  print('Marker ${parkingLot.name} pressed');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ParkingLotScreen(parkingLot)));
                 }),
         ));
         result.add(marker);

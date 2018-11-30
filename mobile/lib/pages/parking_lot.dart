@@ -1,17 +1,17 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
-import 'package:parking_lots/entity/parking-lot.dart';
+import 'package:parking_lots/entity/parking_lot.dart';
 
-class ParkingLot extends StatefulWidget {
-  final ParkingLotEntity parkingLotEntity;
+class ParkingLotScreen extends StatefulWidget {
+  final ParkingLot parkingLot;
 
-  ParkingLot(this.parkingLotEntity);
+  ParkingLotScreen(this.parkingLot);
 
   @override
-  _ParkingLotState createState() => _ParkingLotState();
+  _ParkingLotScreenState createState() => _ParkingLotScreenState();
 }
 
-class _ParkingLotState extends State<ParkingLot> {
+class _ParkingLotScreenState extends State<ParkingLotScreen> {
   static const String route = '/parking_lot_info';
 
   void _launchNavigationInGoogleMaps() {
@@ -19,7 +19,7 @@ class _ParkingLotState extends State<ParkingLot> {
       final AndroidIntent intent = AndroidIntent(
           action: 'action_view',
           data:
-              "http://maps.google.com/maps?daddr=${widget.parkingLotEntity.lat},${widget.parkingLotEntity.lng}",
+              "http://maps.google.com/maps?daddr=${widget.parkingLot.location.lat},${widget.parkingLot.location.lng}",
           package: 'com.google.android.apps.maps');
       intent.launch();
     }
@@ -29,24 +29,19 @@ class _ParkingLotState extends State<ParkingLot> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Parking lot: ${widget.parkingLotEntity.name}'),
+          title: Text('Parking lot: ${widget.parkingLot.name}'),
         ),
         body: Container(
           child: ListView(
             children: <Widget>[
               ListTile(
                 leading: Icon(Icons.place),
-                title: Text('Address: ${widget.parkingLotEntity.address}'),
+                title: Text('Address: ${widget.parkingLot.location.address}'),
               ),
               ListTile(
                 leading: Icon(Icons.all_inclusive),
                 title:
-                    Text('Total slots: ${widget.parkingLotEntity.totalSlots}'),
-              ),
-              ListTile(
-                leading: Icon(Icons.space_bar),
-                title: Text(
-                    'Avaiable slots: ${widget.parkingLotEntity.availableSlots}'),
+                    Text('Total slots: ${widget.parkingLot.capacity}'),
               ),
               Padding(
                 padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
