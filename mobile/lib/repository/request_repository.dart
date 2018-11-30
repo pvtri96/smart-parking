@@ -19,6 +19,11 @@ class RequestRepository {
     return request;
   }
 
+  Future<Request> updateRequest(Request request) async{
+    await databaseRef.child(request.id).update(request.toJson());
+    return request;
+  }
+
   _handleUpdateEvent(DataSnapshot snapShot) {
     Request request = Request.fromMap(snapShot.value, snapShot.key);
 

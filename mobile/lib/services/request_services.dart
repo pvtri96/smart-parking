@@ -9,7 +9,7 @@ class RequestService {
   final RequestRepository _requestRepository = RequestRepository();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> findParkingLot(String address, double lat, double lng) async{
+  Future<void> findParkingLot(String address, double lat, double lng, {bool reFind = false}) async{
     FirebaseUser currentUser = await _auth.signInAnonymously();
     String clientId = currentUser.uid;
 
@@ -17,6 +17,11 @@ class RequestService {
     Payload payload = Payload(location: Location(address, lat, lng));
     requestFindParkingLot.payload = payload;
 
-    requestFindParkingLot = await _requestRepository.saveAndSubscribeRequest(requestFindParkingLot);
+    if (reFind) {
+      requestFindParkingLot = await _requestRepository.updateRequest(requestFindParkingLot);
+    } else {
+      requestFindParkingLot =
+      await _requestRepository.saveAndSubscribeRequest(requestFindParkingLot);
+    }
   }
 }

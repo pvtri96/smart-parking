@@ -130,8 +130,10 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                             }),
                         RaisedButton(
                             child: Text('Find parking lots'),
-                            onPressed: () async {
-                              await _initPlatformState();
+                            onPressed: () {
+                              _initPlatformState().then((location) {
+                                _requestService.findParkingLot('', location['latitude'], location['longitude'], reFind: true);
+                              });
                             }),
                         RaisedButton(
                             child: Text('My location'),
