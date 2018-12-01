@@ -32,23 +32,30 @@ class _HomeState extends State<Home> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Choose a role to access to the application'),
+            Text(
+              'Choose a role to access to the application',
+              style: TextStyle(fontSize: 18),
+            ),
             ButtonBar(
               alignment: MainAxisAlignment.center,
               children: <Widget>[
                 RaisedButton.icon(
                     icon: Image.asset(
                       'images/icons/security-guard.png',
-                      width: 30,
-                      height: 30,
+                      width: 45,
+                      height: 45,
                     ),
                     label: Text('Security Guard'),
-                    highlightColor: Color(0xFFB5FFF7),
                     onPressed: () {
                       Navigator.of(context).pushNamed(SecurityGuards.route);
                     }),
-                RaisedButton(
-                    child: Text('Driver'),
+                RaisedButton.icon(
+                    icon: Image.asset(
+                      'images/icons/driver.png',
+                      width: 45,
+                      height: 45,
+                    ),
+                    label: Text('Driver'),
                     onPressed: () {
                       Navigator.of(context).pushNamed(ParkingLotMarkers.route);
                     })

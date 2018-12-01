@@ -14,7 +14,8 @@ class SecurityGuardScreen extends StatefulWidget {
   _SecurityGuardScreenState createState() => _SecurityGuardScreenState();
 }
 
-class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
+class _SecurityGuardScreenState extends State<SecurityGuardScreen>
+    with SingleTickerProviderStateMixin {
   final _pendingList = <DriverEntity>[
     DriverEntity(id: 1, clientId: '1', updatedAt: 1),
     DriverEntity(id: 2, clientId: '2', updatedAt: 2),
@@ -26,14 +27,6 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
     DriverEntity(id: 9, clientId: '9', updatedAt: 9),
     DriverEntity(id: 10, clientId: '10', updatedAt: 10)
   ];
-
-  final List<TabEntity> tabs = [
-    TabEntity(title: 'Booking List', icon: Icon(Icons.watch_later)),
-    TabEntity(title: 'Parking List', icon: Icon(Icons.album)),
-  ];
-
-  TabEntity _tabsHandler;
-  TabController _tabController;
 
   Widget _buildPendingDriversList() {
     List<PendingRequest> data = widget.parkingLots.pendingRequest;
@@ -125,7 +118,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Security Guard: ${widget.parkingLots.name}'),
+          title: Text('Parking lot: ${widget.parkingLots.name}'),
         ),
         body: DefaultTabController(
             length: 3,
@@ -134,15 +127,30 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
                 automaticallyImplyLeading: false,
                 actions: <Widget>[],
                 title: TabBar(
-                  tabs: [
+                  tabs: <Tab>[
                     Tab(
-                      icon: Icon(Icons.info),
+                      child: Column(
+                        children: <Widget>[
+                          Icon(Icons.info),
+                          Text('Information')
+                        ],
+                      ),
                     ),
                     Tab(
-                      icon: Icon(Icons.list),
+                      child: Column(
+                        children: <Widget>[
+                          Icon(Icons.watch_later),
+                          Text('Booking List')
+                        ],
+                      ),
                     ),
                     Tab(
-                      icon: Icon(Icons.print),
+                      child: Column(
+                        children: <Widget>[
+                          Icon(Icons.local_parking),
+                          Text('Parking List')
+                        ],
+                      ),
                     )
                   ],
                   indicatorColor: Colors.white,
@@ -193,11 +201,4 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
               ]),
             )));
   }
-}
-
-class TabEntity {
-  final String title;
-  final Icon icon;
-
-  TabEntity({this.title, this.icon});
 }

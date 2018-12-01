@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:parking_lots/entity/parking_lots.dart';
 import 'package:parking_lots/pages/security-guard.dart';
-import 'package:parking_lots/widgets/drawer.dart';
 import 'package:parking_lots/services/parking_lots_service.dart';
+import 'package:parking_lots/widgets/drawer.dart';
 
 class SecurityGuards extends StatefulWidget {
   static const String route = '/security_guards';
@@ -15,7 +15,8 @@ class SecurityGuards extends StatefulWidget {
 
 class _SecurityGuardsState extends State<SecurityGuards> {
   final ParkingLotsService _parkingLotsService = ParkingLotsService();
-  final StreamController<List<ParkingLots>> _parkingLotsStream = StreamController();
+  final StreamController<List<ParkingLots>> _parkingLotsStream =
+      StreamController();
 
   Widget _buildSecurityGuardList(List<ParkingLots> data) {
     return ListView.builder(itemBuilder: (context, index) {
@@ -28,7 +29,7 @@ class _SecurityGuardsState extends State<SecurityGuards> {
       if (i >= data.length) {
         return ListTile();
       }
-      return _buildSecurityGuard(data[i]);
+      return _buildSecurityGuard(data[index]);
     });
   }
 
@@ -41,7 +42,8 @@ class _SecurityGuardsState extends State<SecurityGuards> {
         // TODO: GO TO DETAIL
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => SecurityGuardScreen(parkingLot)),
+          MaterialPageRoute(
+              builder: (context) => SecurityGuardScreen(parkingLot)),
         );
       },
     );
@@ -69,14 +71,13 @@ class _SecurityGuardsState extends State<SecurityGuards> {
         ),
         drawer: buildDrawer(context, SecurityGuards.route),
         body: StreamBuilder(
-          stream: _parkingLotsStream.stream,
-          builder: (context, snapShot) {
-            List<ParkingLots> data = snapShot.data ?? List();
-            if (data.isEmpty) {
-              return CircularProgressIndicator();
-            }
-            return _buildSecurityGuardList(data);
-          }
-        ));
+            stream: _parkingLotsStream.stream,
+            builder: (context, snapShot) {
+              List<ParkingLots> data = snapShot.data ?? List();
+              if (data.isEmpty) {
+                return CircularProgressIndicator();
+              }
+              return _buildSecurityGuardList(data);
+            }));
   }
 }

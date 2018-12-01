@@ -116,11 +116,11 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
                 title: Text('Address: ${widget.parkingLot.location.address}'),
               ),
               ListTile(
-                leading: Icon(Icons.all_inclusive),
+                leading: Icon(Icons.directions_car),
                 title: Text('Total slots: ${widget.parkingLot.capacity}'),
               ),
               ListTile(
-                leading: Icon(Icons.code),
+                leading: Icon(Icons.person),
                 title: Text(
                     'Your request ID: ${ApplicationStreams.currentRequest.id}'),
               ),
