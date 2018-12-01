@@ -18,7 +18,7 @@ import { ContextConsumer } from "../Container/Context";
 export class FindParkingLots extends React.Component<{}, States> {
   requestRef = Firebase.database().ref("requests");
 
-  state = {
+  state: States = {
     lat: "",
     lng: "",
     error: null,
@@ -26,6 +26,7 @@ export class FindParkingLots extends React.Component<{}, States> {
   };
 
   public render() {
+    console.log(this.state.result);
     return (
       <Card>
         <CardHeader title="Find parking lots API" />
@@ -87,11 +88,13 @@ export class FindParkingLots extends React.Component<{}, States> {
                 <Grid item xs={12}>
                   <List>
                     {this.state.result &&
-                      (this.state.result as any).parkingLots.map(({ id }: ParkingLot) => (
-                        <ListItem>
-                          <ListItemText>{id}</ListItemText>
-                        </ListItem>
-                      ))}
+                      this.state.result.parkingLots.map(
+                        ({ id }) => (
+                          <ListItem key={id}>
+                            <ListItemText>{id}</ListItemText>
+                          </ListItem>
+                        )
+                      )}
                   </List>
                   {this.state.error && (
                     <code>{JSON.stringify(this.state.error)}</code>
@@ -167,7 +170,7 @@ interface States {
 }
 
 interface ParkingLot {
-  id: string
+  id: string;
 }
 
 export default FindParkingLots;

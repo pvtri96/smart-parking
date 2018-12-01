@@ -16,25 +16,26 @@ export const RequestBookingDescriptor = requestTypeCreator<
   RequestBookingResponse
 >(RequestStatus.REQUEST_BOOKING_PARKING_LOT, async (request, requestId) => {
   console.log("Resolving request booking", request);
+  // FIXME: Skip booking confirmation
+  // await updateParkingLot(request.payload.parkingLotId, parkingLot => ({
+  //   ...parkingLot,
+  //   bookingRequest: [
+  //     ...parkingLot.bookingRequest || [],
+  //     {
+  //       requestId,
+  //       clientId: request.clientId,
+  //       updatedAt: Date.now()
+  //     }
+  //   ]
+  // }));
 
-  await updateParkingLot(request.payload.parkingLotId, parkingLot => ({
-    ...parkingLot,
-    bookingRequest: [
-      ...parkingLot.bookingRequest || [],
-      {
-        requestId,
-        clientId: request.clientId,
-        updatedAt: Date.now()
-      }
-    ]
-  }));
-
-  return {
-    ...request,
-    status: RequestStatus.REQUEST_BOOKING_PARKING_LOT,
-    response: {},
-    data: {},
-  };
+  // return {
+  //   ...request,
+  //   status: RequestStatus.REQUEST_BOOKING_PARKING_LOT,
+  //   response: {},
+  //   data: {},
+  // };
+  return AcceptBookingDescriptor.handle(request, requestId);
 }, request => {
   if(request.payload.parkingLotId) {
     return true;
@@ -62,12 +63,13 @@ export const AcceptBookingDescriptor = requestTypeCreator<
 
   await updateParkingLot(request.payload.parkingLotId, parkingLot => ({
     ...parkingLot,
-    pendingRequest: [
-      ...parkingLot.pendingRequest || [],
+    pendingRequests: [
+      ...parkingLot.pendingRequests || [],
       {
         requestId,
         clientId: request.clientId,
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
+        status: RequestStatus.MOVING_TO_PARKING_LOT
       }
     ]
   }));

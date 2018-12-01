@@ -1,11 +1,16 @@
 import { RequestDescriptor } from '../typing';
 import { HelloWorldRequestDescriptor } from './hello-world';
-import { FindParkingLotDescriptor } from './parking/findParkingLots';
 import {
   AcceptBookingDescriptor,
   RejectBookingDescriptor,
   RequestBookingDescriptor,
-} from './parking/requestBooking';
+} from './parking/booking';
+import {
+  AcceptCheckInDescriptor,
+  RejectCheckInDescriptor,
+  RequestCheckInDescriptor,
+} from './parking/check-in';
+import { FindParkingLotDescriptor } from './parking/findParkingLots';
 
 export const requestDescriptors: RequestDescriptor[] = [
   HelloWorldRequestDescriptor,
@@ -13,4 +18,7 @@ export const requestDescriptors: RequestDescriptor[] = [
   RequestBookingDescriptor,
   AcceptBookingDescriptor,
   RejectBookingDescriptor,
+  AcceptCheckInDescriptor,
+  RejectCheckInDescriptor,
+  RequestCheckInDescriptor,
 ];

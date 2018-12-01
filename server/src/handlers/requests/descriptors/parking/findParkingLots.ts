@@ -81,7 +81,7 @@ export const FindParkingLotDescriptor = requestTypeCreator<Payload, Response>(
     // Then filter 5 parking lots that have shortest duration to get there
     matrixParkingLots = matrixParkingLots
       .sort((a, b) => a.duration.value - b.duration.value)
-      .filter((_, index) => index < 5);
+      .filter((_, index) => index < 20);
 
     return {
       ...request,

@@ -5,11 +5,12 @@ export interface FirebaseParkingLot {
   name: string;
   location: Location;
   capacity: number;
-  parkingRequest?: ParkingLotRequest[];
-  pendingRequest?: ParkingLotRequest[];
-  bookingRequest?: ParkingLotRequest[];
-
+  pendingRequests?: ParkingLotRequest[];
+  parkingRequests?: CheckedInParkingLotRequest[];
+  parkedRequests?: CheckedOutParkingLotRequest[];
 }
+
+
 export interface ParkingLot extends FirebaseParkingLot {
   id: string;
 }
@@ -18,6 +19,15 @@ export interface ParkingLotRequest {
   requestId: string;
   clientId: string;
   updatedAt: number;
+  status: string;
+}
+
+export interface CheckedInParkingLotRequest extends ParkingLotRequest {
+  checkInAt: number;
+}
+
+export interface CheckedOutParkingLotRequest extends CheckedInParkingLotRequest {
+  checkOutAt: number;
 }
 
 export function findAllParkingLots(): Promise<ParkingLot[]> {

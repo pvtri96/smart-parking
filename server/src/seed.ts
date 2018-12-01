@@ -32,8 +32,8 @@ async function bootstrap() {
           address,
         },
         capacity,
-        pendingRequest: [],
-        parkingRequest: [],
+        pendingRequests: [],
+        parkingRequests: [],
       }))
       .map(parkingLot => {
         return new Promise(resolve => {

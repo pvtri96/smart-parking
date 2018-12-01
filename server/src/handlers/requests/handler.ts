@@ -12,7 +12,7 @@ export function run() {
   async function onRequest(snapshot: Firebase.database.DataSnapshot) {
     let request = snapshot.val();
     if (!DefaultValidation.isValidRequest(request)) {
-      console.log(`Invalid request, skip ${snapshot.key}`);
+      console.log(`Invalid request, skip ${snapshot.key}`, request);
 
       return;
     }
