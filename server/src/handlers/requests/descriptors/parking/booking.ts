@@ -1,4 +1,3 @@
-
 import { updateParkingLot } from '../../../../entities';
 import { RequestStatus } from '../../status';
 import { requestTypeCreator } from '../../typing';
@@ -14,35 +13,43 @@ interface RequestBookingResponse {}
 export const RequestBookingDescriptor = requestTypeCreator<
   RequestBookingPayload,
   RequestBookingResponse
->(RequestStatus.REQUEST_BOOKING_PARKING_LOT, async (request, requestId) => {
-  console.log("Resolving request booking", request);
-  // FIXME: Skip booking confirmation
-  // await updateParkingLot(request.payload.parkingLotId, parkingLot => ({
-  //   ...parkingLot,
-  //   bookingRequest: [
-  //     ...parkingLot.bookingRequest || [],
-  //     {
-  //       requestId,
-  //       clientId: request.clientId,
-  //       updatedAt: Date.now()
-  //     }
-  //   ]
-  // }));
+>(
+  RequestStatus.REQUEST_BOOKING_PARKING_LOT,
+  async (request, requestId) => {
+    console.log('Resolving request booking', request);
+    // FIXME: Skip booking confirmation
+    await updateParkingLot(request.payload.parkingLotId, parkingLot => {
+      let pendingRequests = parkingLot.pendingRequests || [];
+      pendingRequests = pendingRequests.filter(
+        req => req.requestId !== requestId,
+      );
+      let parkingRequests = parkingLot.parkingRequests || [];
+      parkingRequests = parkingRequests.filter(
+        req => req.requestId !== requestId,
+      );
+      let parkedRequests = parkingLot.parkedRequests || [];
+      parkedRequests = parkedRequests.filter(
+        req => req.requestId !== requestId,
+      );
 
-  // return {
-  //   ...request,
-  //   status: RequestStatus.REQUEST_BOOKING_PARKING_LOT,
-  //   response: {},
-  //   data: {},
-  // };
-  return AcceptBookingDescriptor.handle(request, requestId);
-}, request => {
-  if(request.payload.parkingLotId) {
-    return true;
-  }
+      return {
+        ...parkingLot,
+        pendingRequests,
+        parkingRequests,
+        parkedRequests,
+      };
+    });
 
-  return false;
-});
+    return AcceptBookingDescriptor.handle(request, requestId);
+  },
+  request => {
+    if (request.payload.parkingLotId) {
+      return true;
+    }
+
+    return false;
+  },
+);
 
 //////////////////////////////////////
 //         ACCEPT BOOKING           //
@@ -59,36 +66,39 @@ export const AcceptBookingDescriptor = requestTypeCreator<
   AcceptBookingPayload,
   AcceptBookingResponse,
   AcceptBookingData
->(RequestStatus.ACCEPT_BOOKING_PARKING_LOT, async (request, requestId) => {
+>(
+  RequestStatus.ACCEPT_BOOKING_PARKING_LOT,
+  async (request, requestId) => {
+    await updateParkingLot(request.payload.parkingLotId, parkingLot => ({
+      ...parkingLot,
+      pendingRequests: [
+        ...(parkingLot.pendingRequests || []),
+        {
+          requestId,
+          clientId: request.clientId,
+          updatedAt: Date.now(),
+          status: RequestStatus.MOVING_TO_PARKING_LOT,
+        },
+      ],
+    }));
 
-  await updateParkingLot(request.payload.parkingLotId, parkingLot => ({
-    ...parkingLot,
-    pendingRequests: [
-      ...parkingLot.pendingRequests || [],
-      {
-        requestId,
-        clientId: request.clientId,
-        updatedAt: Date.now(),
-        status: RequestStatus.MOVING_TO_PARKING_LOT
-      }
-    ]
-  }));
+    return {
+      ...request,
+      status: RequestStatus.MOVING_TO_PARKING_LOT,
+      response: {},
+      data: {
+        parkingLotId: request.payload.parkingLotId,
+      },
+    };
+  },
+  request => {
+    if (request.payload.parkingLotId) {
+      return true;
+    }
 
-  return {
-    ...request,
-    status: RequestStatus.MOVING_TO_PARKING_LOT,
-    response: {},
-    data: {
-      parkingLotId: request.payload.parkingLotId
-    },
-  };
-}, request => {
-  if(request.payload.parkingLotId) {
-    return true;
-  }
-
-  return false;
-});
+    return false;
+  },
+);
 
 //////////////////////////////////////
 //         REJECT BOOKING           //
@@ -105,19 +115,23 @@ export const RejectBookingDescriptor = requestTypeCreator<
   RejectBookingPayload,
   RejectBookingResponse,
   RejectBookingData
->(RequestStatus.REJECT_BOOKING_PARKING_LOT, async request => {
-  return {
-    ...request,
-    status: RequestStatus.FORBIDDEN,
-    response: {},
-    data: {
-      parkingLotId: request.payload.parkingLotId
-    },
-  };
-}, request => {
-  if(request.payload.parkingLotId) {
-    return true;
-  }
+>(
+  RequestStatus.REJECT_BOOKING_PARKING_LOT,
+  async request => {
+    return {
+      ...request,
+      status: RequestStatus.FORBIDDEN,
+      response: {},
+      data: {
+        parkingLotId: request.payload.parkingLotId,
+      },
+    };
+  },
+  request => {
+    if (request.payload.parkingLotId) {
+      return true;
+    }
 
-  return false;
-});
+    return false;
+  },
+);

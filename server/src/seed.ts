@@ -3,6 +3,9 @@ import * as Fs from 'fs';
 import * as Path from 'path';
 import * as FirebaseConfig from './config/firebase';
 import { FirebaseParkingLot } from './entities';
+import { FirebaseBookingPrice } from './entities/BookingPrice';
+
+bootstrap();
 
 async function bootstrap() {
   Firebase.initializeApp({
@@ -10,6 +13,12 @@ async function bootstrap() {
     databaseURL: FirebaseConfig.databaseUrl,
   });
 
+  await Promise.all([initParkingLots(), initBookingPrices()]);
+
+  process.exit();
+}
+
+async function initParkingLots() {
   const rawData: {
     name: string;
     lat: number;
@@ -43,8 +52,34 @@ async function bootstrap() {
         });
       }),
   );
-
-  process.exit();
 }
 
-bootstrap();
+async function initBookingPrices() {
+  const rawData: {
+    duration: number;
+    price: number;
+    price6: number;
+    price12: number;
+  }[] = JSON.parse(
+    Fs.readFileSync(
+      Path.join(process.cwd(), 'data', 'bookingPrices.json'),
+    ).toString(),
+  );
+
+  await Promise.all(
+    rawData
+      .map<FirebaseBookingPrice>(({ duration, price, price6, price12 }) => ({
+        duration,
+        price,
+        price6,
+        price12,
+      }))
+      .map(bookingPrice => {
+        return new Promise(resolve => {
+          Firebase.database()
+            .ref('bookingPrices')
+            .push(bookingPrice, resolve);
+        });
+      }),
+  );
+}

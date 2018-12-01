@@ -84,7 +84,7 @@ export const AcceptCheckInDescriptor = requestTypeCreator<
         req => req.requestId !== requestId,
       );
       parkingRequests = [
-        ...parkingRequests,
+        ...parkingRequests.filter(req => req.requestId !== updatedRequest.requestId),
         {
           ...updatedRequest,
           status: RequestStatus.PARKING_IN_PARKING_LOT,
@@ -135,10 +135,7 @@ export const RejectCheckInDescriptor = requestTypeCreator<
     return {
       ...request,
       status: RequestStatus.FORBIDDEN,
-      response: {},
-      data: {
-        parkingLotId: request.data.parkingLotId,
-      },
+      response: {}
     };
   },
   request => {

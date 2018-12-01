@@ -1,0 +1,140 @@
+[
+  {
+    "duration": 1,
+    "price": 15000,
+    "price6": 20000,
+    "price12": 25000
+  },
+  {
+    "duration": 2,
+    "price": 15000,
+    "price6": 20000,
+    "price12": 25000
+  },
+  {
+    "duration": 3,
+    "price": 35000,
+    "price6": 45000,
+    "price12": 50000
+  },
+  {
+    "duration": 4,
+    "price": 55000,
+    "price6": 65000,
+    "price12": 75000
+  },
+  {
+    "duration": 5,
+    "price": 75000,
+    "price6": 85000,
+    "price12": 100000
+  },
+  {
+    "duration": 6,
+    "price": 95000,
+    "price6": 105000,
+    "price12": 125000
+  },
+  {
+    "duration": 7,
+    "price": 115000,
+    "price6": 125000,
+    "price12": 150000
+  },
+  {
+    "duration": 8,
+    "price": 135000,
+    "price6": 145000,
+    "price12": 175000
+  },
+  {
+    "duration": 9,
+    "price": 155000,
+    "price6": 165000,
+    "price12": 200000
+  },
+  {
+    "duration": 10,
+    "price": 175000,
+    "price6": 185000,
+    "price12": 225000
+  },
+  {
+    "duration": 11,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 12,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 13,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 14,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 15,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 16,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 17,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 18,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 19,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 20,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 21,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 22,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  },
+  {
+    "duration": 23,
+    "price": 200000,
+    "price6": 230000,
+    "price12": 250000
+  }
+]

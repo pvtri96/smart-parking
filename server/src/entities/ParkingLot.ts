@@ -92,7 +92,7 @@ function getRef() {
  * Parking Lot object validation
  */
 function isParkingLot(object: any): object is ParkingLot {
-  if (object.name && object.location && object.location.lat && object.location.lng) {
+  if (object && object.name && object.location && object.location.lat && object.location.lng) {
     return true;
   }
 
