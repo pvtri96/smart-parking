@@ -14,8 +14,7 @@ class SecurityGuardScreen extends StatefulWidget {
   _SecurityGuardScreenState createState() => _SecurityGuardScreenState();
 }
 
-class _SecurityGuardScreenState extends State<SecurityGuardScreen>
-    with SingleTickerProviderStateMixin {
+class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
   final _pendingList = <DriverEntity>[
     DriverEntity(id: 1, clientId: '1', updatedAt: 1),
     DriverEntity(id: 2, clientId: '2', updatedAt: 2),
@@ -26,6 +25,28 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen>
     DriverEntity(id: 8, clientId: '8', updatedAt: 8),
     DriverEntity(id: 9, clientId: '9', updatedAt: 9),
     DriverEntity(id: 10, clientId: '10', updatedAt: 10)
+  ];
+  List<Tab> _tabs = <Tab>[
+    Tab(
+      child: Column(
+        children: <Widget>[Icon(Icons.info), Text('Information')],
+      ),
+    ),
+    Tab(
+      child: Column(
+        children: <Widget>[Icon(Icons.watch_later), Text('Booking List')],
+      ),
+    ),
+    Tab(
+      child: Column(
+        children: <Widget>[Icon(Icons.local_parking), Text('Parking List')],
+      ),
+    ),
+    Tab(
+      child: Column(
+        children: <Widget>[Icon(Icons.check_circle), Text('Parked List')],
+      ),
+    )
   ];
 
   Widget _buildPendingDriversList() {
@@ -99,6 +120,21 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen>
     });
   }
 
+  Widget _buildParkedDriversList() {
+    return ListView.builder(itemBuilder: (context, index) {
+      if (index.isOdd) {
+        return Divider();
+      }
+
+      final i = index ~/ 2;
+      // TODO: GET MORE ITEM WHEN SCROLLING DOWN
+      if (i >= _pendingList.length) {
+        return ListTile();
+      }
+      return _buildParkedDriver(_pendingList[i]);
+    });
+  }
+
   Widget _buildParkingDriver(DriverEntity slot) {
     int timeStamp = slot.updatedAt;
     DateTime updatedAt = convertToDate(timeStamp);
@@ -106,7 +142,69 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen>
       leading: Icon(Icons.directions_car),
       title: Text('Client ${slot.clientId}'),
       subtitle:
-          Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
+          Text('Checked in: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
+    );
+  }
+
+  Widget _buildParkedDriver(DriverEntity slot) {
+    int timeStamp = slot.updatedAt;
+    DateTime updatedAt = convertToDate(timeStamp);
+    return ListTile(
+      leading: Icon(Icons.directions_car),
+      title: Text('Client ${slot.clientId}'),
+      subtitle: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: 4, bottom: 4),
+              child: Text(
+                  'Checked in: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
+            ),
+            Text('Checked out: ${DateFormat('dd/MM/yyyy').format(updatedAt)}')
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildParkingLotInfo() {
+    return ListView(
+      children: <Widget>[
+        ListTile(
+          leading: Icon(Icons.place),
+          title: Text('Address: ${widget.parkingLots.location.address}'),
+        ),
+        ListTile(
+          leading: Icon(Icons.directions_car),
+          title: Text('Total slots: ${widget.parkingLots.capacity}'),
+        ),
+        ListTile(
+          leading: Icon(Icons.watch_later),
+          title: Text(
+              'Booking slots: ${widget.parkingLots.pendingRequest != null ? widget.parkingLots.pendingRequest.length : 0}'),
+        ),
+        Padding(
+          padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
+          child: ButtonBar(
+            alignment: MainAxisAlignment.center,
+            children: <Widget>[
+              RaisedButton.icon(
+                  icon: Icon(Icons.arrow_forward),
+                  label: Text('Check in'),
+                  onPressed: () {
+                    // TODO: CHECK IN
+                  }),
+              RaisedButton.icon(
+                  icon: Icon(Icons.arrow_back),
+                  label: Text('Check out'),
+                  onPressed: () {
+                    // TODO: CHECK OUT
+                  })
+            ],
+          ),
+        )
+      ],
     );
   }
 
@@ -121,83 +219,22 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen>
           title: Text('Parking lot: ${widget.parkingLots.name}'),
         ),
         body: DefaultTabController(
-            length: 3,
+            length: _tabs.length,
             child: Scaffold(
               appBar: AppBar(
                 automaticallyImplyLeading: false,
                 actions: <Widget>[],
                 title: TabBar(
-                  tabs: <Tab>[
-                    Tab(
-                      child: Column(
-                        children: <Widget>[
-                          Icon(Icons.info),
-                          Text('Information')
-                        ],
-                      ),
-                    ),
-                    Tab(
-                      child: Column(
-                        children: <Widget>[
-                          Icon(Icons.watch_later),
-                          Text('Booking List')
-                        ],
-                      ),
-                    ),
-                    Tab(
-                      child: Column(
-                        children: <Widget>[
-                          Icon(Icons.local_parking),
-                          Text('Parking List')
-                        ],
-                      ),
-                    )
-                  ],
+                  isScrollable: true,
+                  tabs: _tabs,
                   indicatorColor: Colors.white,
                 ),
               ),
               body: TabBarView(children: [
-                ListView(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(Icons.place),
-                      title: Text(
-                          'Address: ${widget.parkingLots.location.address}'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.all_inclusive),
-                      title:
-                          Text('Total slots: ${widget.parkingLots.capacity}'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.spa),
-                      title: Text(
-                          'Booking slots: ${widget.parkingLots.pendingRequest != null ? widget.parkingLots.pendingRequest.length : 0}'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
-                      child: ButtonBar(
-                        alignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          RaisedButton.icon(
-                              icon: Icon(Icons.arrow_forward),
-                              label: Text('Check in'),
-                              onPressed: () {
-                                // TODO: CHECK IN
-                              }),
-                          RaisedButton.icon(
-                              icon: Icon(Icons.arrow_back),
-                              label: Text('Check out'),
-                              onPressed: () {
-                                // TODO: CHECK OUT
-                              })
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                _buildParkingLotInfo(),
                 _buildPendingDriversList(),
-                _buildParkingDriversList()
+                _buildParkingDriversList(),
+                _buildParkedDriversList()
               ]),
             )));
   }

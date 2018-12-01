@@ -29,7 +29,7 @@ class _SecurityGuardsState extends State<SecurityGuards> {
       if (i >= data.length) {
         return ListTile();
       }
-      return _buildSecurityGuard(data[index]);
+      return _buildSecurityGuard(data[i]);
     });
   }
 
@@ -75,7 +75,9 @@ class _SecurityGuardsState extends State<SecurityGuards> {
             builder: (context, snapShot) {
               List<ParkingLots> data = snapShot.data ?? List();
               if (data.isEmpty) {
-                return CircularProgressIndicator();
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
               }
               return _buildSecurityGuardList(data);
             }));
