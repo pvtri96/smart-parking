@@ -8,4 +8,5 @@ class ApplicationStreams {
 
   static StreamSubscription onRequestChildUpdateSubscription;
   static StreamController<Response> onResponseFindingParkingLot = StreamController();
+  static StreamController<String> onMovingBookingToParkingLot = StreamController();
 }

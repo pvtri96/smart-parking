@@ -1,6 +1,8 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:parking_lots/entity/parking_lot.dart';
+import 'package:parking_lots/enum/status.dart';
+import 'package:parking_lots/listeners/application_streams.dart';
 import 'package:parking_lots/services/request_services.dart';
 
 class ParkingLotScreen extends StatefulWidget {
@@ -29,6 +31,22 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    ApplicationStreams.onMovingBookingToParkingLot.stream.listen((status) {
+      if (status == Status.MOVING_TO_PARKING_LOT) {
+        _launchNavigationInGoogleMaps();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    ApplicationStreams.onMovingBookingToParkingLot.close();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -46,17 +64,16 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
                 title:
                     Text('Total slots: ${widget.parkingLot.capacity}'),
               ),
+              ListTile(
+                leading: Icon(Icons.code),
+                title:
+                Text('Your request ID: ${ApplicationStreams.currentRequest.id}'),
+              ),
               Padding(
                 padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
                 child: ButtonBar(
                   alignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    RaisedButton.icon(
-                        icon: Icon(Icons.navigation),
-                        label: Text('Navigate'),
-                        onPressed: () {
-                          _launchNavigationInGoogleMaps();
-                        }),
                     RaisedButton.icon(
                         icon: Icon(Icons.add),
                         label: Text('I want to park here'),

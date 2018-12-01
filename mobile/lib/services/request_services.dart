@@ -31,7 +31,7 @@ class RequestService {
 
   Future<Request> bookParkingLot(String parkingLotId) async{
     Request request = ApplicationStreams.currentRequest;
-    request.status = Status.REQUEST_BOOK_PARKING_LOT;
+    request.status = Status.REQUEST_BOOKING_PARKING_LOT;
     request.payload = Payload(parkingLotId: parkingLotId);
 
     await _requestRepository.updateRequest(request.id, request.toRequestBookingJson());

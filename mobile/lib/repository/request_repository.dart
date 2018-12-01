@@ -49,6 +49,9 @@ class RequestRepository {
       if (status == Status.RESPONSE_FIND_PARKING_LOT) {
         ApplicationStreams.onResponseFindingParkingLot.add(_response);
       }
+      if (status == Status.MOVING_TO_PARKING_LOT) {
+        ApplicationStreams.onMovingBookingToParkingLot.add(status);
+      }
     }
   }
 }

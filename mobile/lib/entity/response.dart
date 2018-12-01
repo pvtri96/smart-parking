@@ -18,7 +18,9 @@ class Response {
   factory Response.fromMap(Map<dynamic, dynamic> data) {
     List<ParkingLot> result = List();
     data.forEach((key, value) {
-      result.add(ParkingLot.fromMap(value));
+      ParkingLot parkingLot = ParkingLot.fromMap(value);
+      parkingLot.id = key;
+      result.add(parkingLot);
     });
 
     return Response(
