@@ -23,8 +23,8 @@ class ParkingLots {
       Location.fromMap(data['location']),
       data['name']
     );
-    if (data['pendingRequest'] != null) {
-      List pendingRequest = data['pendingRequest'];
+    if (data['pendingRequests'] != null) {
+      List pendingRequest = data['pendingRequests'];
       List<PendingRequest> pendingRequestList = List();
       pendingRequest.forEach((value) {
         pendingRequestList.add(PendingRequest.fromMap(value));

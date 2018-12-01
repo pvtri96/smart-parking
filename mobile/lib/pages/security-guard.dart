@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:parking_lots/entity/driver.dart';
 import 'package:parking_lots/entity/parking_lots.dart';
+import 'package:parking_lots/entity/pending_request.dart';
 
 class SecurityGuardScreen extends StatefulWidget {
   static const String route = '/security_guard';
@@ -26,26 +28,38 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
   ];
 
   Widget _buildPendingDriversList() {
-    return ListView.builder(itemBuilder: (context, index) {
-      if (index.isOdd) {
-        return Divider();
-      }
+    List<PendingRequest> data = widget.parkingLots.pendingRequest;
+    if (data != null && data.isNotEmpty) {
+      return ListView.builder(itemBuilder: (context, index) {
+        if (index.isOdd) {
+          return Divider();
+        }
 
-      final i = index ~/ 2;
-      // TODO: GET MORE ITEM WHEN SCROLLING DOWN
-      if (i >= _pendingList.length) {
-        return ListTile();
-//        _pendingList.addAll(...);
-      }
-      return _buildPendingDriver(_pendingList[i]);
-    });
+        final i = index ~/ 2;
+        // TODO: GET MORE ITEM WHEN SCROLLING DOWN
+        if (i >= data.length) {
+          return ListTile();
+        }
+        return _buildPendingDriver(data[i]);
+      });
+    } else {
+      return ListView.builder(itemBuilder: (context, index) {
+        return ListTile(
+          leading: Icon(Icons.directions_car),
+          title: Text('No data'),
+          subtitle: Text('Nothing to show here'),
+        );
+      });
+    }
   }
 
-  Widget _buildPendingDriver(DriverEntity slot) {
+  Widget _buildPendingDriver(PendingRequest slot) {
+    int timeStamp = slot.updatedAt;
+    DateTime updatedAt = convertToDate(timeStamp);
     return ListTile(
       leading: Icon(Icons.directions_car),
       title: Text('Client ${slot.clientId}'),
-      subtitle: Text('Updated at: ${slot.updatedAt}'),
+      subtitle: Text('Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(updatedAt)}'),
     );
   }
 
@@ -59,18 +73,23 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
       // TODO: GET MORE ITEM WHEN SCROLLING DOWN
       if (i >= _pendingList.length) {
         return ListTile();
-//        _pendingList.addAll(...);
       }
       return _buildParkingDriver(_pendingList[i]);
     });
   }
 
   Widget _buildParkingDriver(DriverEntity slot) {
+    int timeStamp = slot.updatedAt;
+    DateTime updatedAt = convertToDate(timeStamp);
     return ListTile(
       leading: Icon(Icons.directions_car),
       title: Text('Client ${slot.clientId}'),
-      subtitle: Text('Updated at: ${slot.updatedAt}'),
+      subtitle: Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
     );
+  }
+
+  DateTime convertToDate(int time) {
+    return DateTime.fromMillisecondsSinceEpoch(time);
   }
 
   @override
