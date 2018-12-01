@@ -1,4 +1,4 @@
-class SecurityGuardEntity {
+class ParkingLots {
   int id;
   String name;
   double lat;
@@ -9,7 +9,7 @@ class SecurityGuardEntity {
   int availableSlots;
   int waitingSlots;
 
-  SecurityGuardEntity(
+  ParkingLots(
       {this.id,
       this.name,
       this.lat,

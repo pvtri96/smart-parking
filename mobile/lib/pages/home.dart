@@ -36,22 +36,6 @@ class _HomeState extends State<Home> {
             ButtonBar(
               alignment: MainAxisAlignment.center,
               children: <Widget>[
-//                Column(
-//                  mainAxisSize: MainAxisSize.min,
-//                  mainAxisAlignment: MainAxisAlignment.center,
-//                  crossAxisAlignment: CrossAxisAlignment.start,
-//                  children: <Widget>[
-//                    Image.asset(
-//                      'images/icons/security-guard.png',
-//                      height: 24,
-//                      width: 24,
-//                    ),
-//                    Container(
-//                      padding: EdgeInsets.only(top: 8),
-//                      child: Text('Security Guard'),
-//                    ),
-//                  ],
-//                ),
                 RaisedButton.icon(
                     icon: Image.asset(
                       'images/icons/security-guard.png',

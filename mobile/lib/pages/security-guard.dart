@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:parking_lots/entity/driver.dart';
-import 'package:parking_lots/entity/security-guard.dart';
+import 'package:parking_lots/entity/parking_lots.dart';
 
-class SecurityGuard extends StatefulWidget {
+class SecurityGuardScreen extends StatefulWidget {
   static const String route = '/security_guard';
-  final SecurityGuardEntity securityGuardEntity;
+  final ParkingLots parkingLots;
 
-  SecurityGuard(this.securityGuardEntity);
+  SecurityGuardScreen(this.parkingLots);
 
   @override
-  _SecurityGuardState createState() => _SecurityGuardState();
+  _SecurityGuardScreenState createState() => _SecurityGuardScreenState();
 }
 
-class _SecurityGuardState extends State<SecurityGuard> {
+class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
   final _pendingList = <DriverEntity>[
     DriverEntity(id: 1, clientId: '1', updatedAt: 1),
     DriverEntity(id: 2, clientId: '2', updatedAt: 2),
@@ -77,7 +77,7 @@ class _SecurityGuardState extends State<SecurityGuard> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Security Guard: ${widget.securityGuardEntity.name}'),
+          title: Text('Security Guard: ${widget.parkingLots.name}'),
         ),
         body: DefaultTabController(
             length: 3,
@@ -106,27 +106,17 @@ class _SecurityGuardState extends State<SecurityGuard> {
                     ListTile(
                       leading: Icon(Icons.place),
                       title: Text(
-                          'Address: ${widget.securityGuardEntity.address}'),
+                          'Address: ${widget.parkingLots.location.address}'),
                     ),
                     ListTile(
                       leading: Icon(Icons.all_inclusive),
                       title: Text(
-                          'Total slots: ${widget.securityGuardEntity.totalSlots}'),
+                          'Total slots: ${widget.parkingLots.capacity}'),
                     ),
                     ListTile(
                       leading: Icon(Icons.spa),
                       title: Text(
-                          'Booked slots: ${widget.securityGuardEntity.bookedSlots}'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.card_giftcard),
-                      title: Text(
-                          'Waiting slots: ${widget.securityGuardEntity.waitingSlots}'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.space_bar),
-                      title: Text(
-                          'Avaiable slots: ${widget.securityGuardEntity.availableSlots}'),
+                          'Booked slots: ${widget.parkingLots.pendingRequest != null ? widget.parkingLots.pendingRequest.length : 0}'),
                     ),
                     Padding(
                       padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
