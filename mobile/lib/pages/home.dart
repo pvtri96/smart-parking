@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parking_lots/pages/parking_lot_markers.dart';
+import 'package:parking_lots/pages/security-guards.dart';
 
 class Home extends StatefulWidget {
   static const String route = '/';
@@ -35,10 +36,32 @@ class _HomeState extends State<Home> {
             ButtonBar(
               alignment: MainAxisAlignment.center,
               children: <Widget>[
-                RaisedButton(
-                    child: Text('Security Guard'),
+//                Column(
+//                  mainAxisSize: MainAxisSize.min,
+//                  mainAxisAlignment: MainAxisAlignment.center,
+//                  crossAxisAlignment: CrossAxisAlignment.start,
+//                  children: <Widget>[
+//                    Image.asset(
+//                      'images/icons/security-guard.png',
+//                      height: 24,
+//                      width: 24,
+//                    ),
+//                    Container(
+//                      padding: EdgeInsets.only(top: 8),
+//                      child: Text('Security Guard'),
+//                    ),
+//                  ],
+//                ),
+                RaisedButton.icon(
+                    icon: Image.asset(
+                      'images/icons/security-guard.png',
+                      width: 30,
+                      height: 30,
+                    ),
+                    label: Text('Security Guard'),
+                    highlightColor: Color(0xFFB5FFF7),
                     onPressed: () {
-                      // TODO: ACCESS TO THE APPLICATION WITH SECURITY GUARD
+                      Navigator.of(context).pushNamed(SecurityGuards.route);
                     }),
                 RaisedButton(
                     child: Text('Driver'),

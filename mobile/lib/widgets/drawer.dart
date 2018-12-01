@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:parking_lots/pages/current_location.dart';
 import 'package:parking_lots/pages/home.dart';
 import 'package:parking_lots/pages/parking_lot_markers.dart';
-import 'package:parking_lots/pages/security-guard.dart';
+import 'package:parking_lots/pages/security-guards.dart';
 
 Drawer buildDrawer(BuildContext context, String currentRoute) {
   return Drawer(
@@ -25,17 +24,10 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
           },
         ),
         ListTile(
-          title: Text('Security guard'),
-          selected: currentRoute == SecurityGuard.route,
+          title: Text('Security guards'),
+          selected: currentRoute == SecurityGuards.route,
           onTap: () {
-            Navigator.pushReplacementNamed(context, SecurityGuard.route);
-          },
-        ),
-        ListTile(
-          title: Text('Current location'),
-          selected: currentRoute == CurrentLocation.route,
-          onTap: () {
-            Navigator.pushReplacementNamed(context, CurrentLocation.route);
+            Navigator.pushReplacementNamed(context, SecurityGuards.route);
           },
         ),
       ],

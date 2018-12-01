@@ -6,6 +6,7 @@ import 'pages/current_location.dart';
 import 'pages/home.dart';
 import 'pages/parking_lot_markers.dart';
 import 'pages/security-guard.dart';
+import 'pages/security-guards.dart';
 
 void main() {
   GoogleMapController.init();
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         ParkingLotMarkers.route: (context) => ParkingLotMarkers(),
         SecurityGuard.route: (context) => SecurityGuard(securityGuard),
+        SecurityGuards.route: (context) => SecurityGuards(),
         CurrentLocation.route: (context) => CurrentLocation(),
       },
     );

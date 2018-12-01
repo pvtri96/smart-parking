@@ -20,7 +20,8 @@ class ParkingLotMarkers extends StatefulWidget {
   _ParkingLotMarkersState createState() => _ParkingLotMarkersState();
 }
 
-class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
+class _ParkingLotMarkersState extends State<ParkingLotMarkers>
+    with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final RequestService _requestService = RequestService();
   final StreamController<List<Marker>> _markerStream = StreamController();
@@ -38,34 +39,36 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
     mapController = MapController();
     _registerStream();
     _initPlatformState().then((location) {
-      _requestService.findParkingLot('', location['latitude'], location['longitude']).then((request) {
+      _requestService
+          .findParkingLot('', location['latitude'], location['longitude'])
+          .then((request) {
         ApplicationStreams.currentRequest = request;
       });
     });
   }
 
   _registerStream() {
-    ApplicationStreams.onResponseFindingParkingLot.stream.listen((Response response) {
+    ApplicationStreams.onResponseFindingParkingLot.stream
+        .listen((Response response) {
       List<Marker> result = List();
       response.parkingLots.forEach((parkingLot) {
         Marker marker = Marker(
-          width: 35,
-          height: 35,
-          point: LatLng(parkingLot.location.lat, parkingLot.location.lng),
-          builder: (context) =>
-            Container(
-              child: IconButton(
-                icon: Icon(Icons.location_on),
-                color: Colors.red,
-                iconSize: 35,
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ParkingLotScreen(parkingLot)));
-                }),
-        ));
+            width: 35,
+            height: 35,
+            point: LatLng(parkingLot.location.lat, parkingLot.location.lng),
+            builder: (context) => Container(
+                  child: IconButton(
+                      icon: Icon(Icons.location_on),
+                      color: Colors.red,
+                      iconSize: 35,
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ParkingLotScreen(parkingLot)));
+                      }),
+                ));
         result.add(marker);
       });
 
@@ -108,6 +111,35 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
     return myLocation;
   }
 
+  void _animatedMapMove(LatLng desLocation, double desZoom) {
+    final _latTween = Tween<double>(
+        begin: mapController.center.latitude, end: desLocation.latitude);
+    final _lngTween = Tween<double>(
+        begin: mapController.center.longitude, end: desLocation.longitude);
+    final _zoomTween = Tween<double>(begin: mapController.zoom, end: desZoom);
+
+    AnimationController animationController = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
+    Animation<double> animation = CurvedAnimation(
+        parent: animationController, curve: Curves.fastOutSlowIn);
+
+    animationController.addListener(() {
+      mapController.move(
+          LatLng(_latTween.evaluate(animation), _lngTween.evaluate(animation)),
+          _zoomTween.evaluate(animation));
+    });
+
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        animationController.dispose();
+      } else if (status == AnimationStatus.dismissed) {
+        animationController.dispose();
+      }
+    });
+
+    animationController.forward();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,12 +173,13 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                             child: Text('Find parking lots'),
                             onPressed: () {
                               _initPlatformState().then((location) {
-                                _requestService.findParkingLot('',
-                                    location['latitude'],
-                                    location['longitude'],
-                                    reFind: true,
-                                    requestId: ApplicationStreams.currentRequest.id)
-                                .then((request) {
+                                _requestService
+                                    .findParkingLot('', location['latitude'],
+                                        location['longitude'],
+                                        reFind: true,
+                                        requestId: ApplicationStreams
+                                            .currentRequest.id)
+                                    .then((request) {
                                   ApplicationStreams.currentRequest = request;
                                 });
                               });
@@ -154,7 +187,8 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                         RaisedButton(
                             child: Text('My location'),
                             onPressed: () {
-                              // TODO: BACK TO YOUR CURRENT LOCATION
+                              _animatedMapMove(
+                                  LatLng(16.041926, 108.241036), 15);
                             })
                       ],
                     )
@@ -180,7 +214,7 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers> {
                       layers: [
                         TileLayerOptions(
                           urlTemplate:
-                          'https://api.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}',
+                              'https://api.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}',
                           additionalOptions: {
                             'accessToken': ParkingLotMarkers.mapBoxAccessToken,
                             'id': 'mapbox.streets',
