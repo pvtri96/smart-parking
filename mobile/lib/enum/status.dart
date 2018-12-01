@@ -17,4 +17,5 @@ class Status {
   static const String ACCEPT_CHECK_OUT_PARKING_LOT = 'ACCEPT_CHECK_OUT_PARKING_LOT';
   static const String REJECT_CHECK_OUT_PARKING_LOT = 'REJECT_CHECK_OUT_PARKING_LOT';
   static const String CHECKED_OUT_OF_PARKING_LOT = 'CHECKED_OUT_OF_PARKING_LOT';
+  static const String FORBIDDEN = 'FORBIDDEN';
 }

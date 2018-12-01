@@ -44,6 +44,13 @@ class Request {
     };
   }
 
+  toForbiddenJson() {
+    return {
+      "clientId": this.clientId,
+      "status": this.status,
+    };
+  }
+
   factory Request.fromMap(Map<dynamic, dynamic> data, String key) {
     return Request(
       data['clientId'].toString(),

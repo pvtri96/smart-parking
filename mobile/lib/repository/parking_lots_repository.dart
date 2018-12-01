@@ -29,6 +29,15 @@ class ParkingLotsRepository {
       _handleData(event);
       ApplicationStreams.securityScreen.add(ApplicationStreams.securityScreenMap);
     });
+    ApplicationStreams.onParkingLotsChildRemovedSubscription = _parkingLotsRef.child(id).onChildRemoved.listen((event) {
+      String key = event.snapshot.key;
+      switch (key) {
+        case 'pendingRequests': {ApplicationStreams.securityScreenMap[key] = List<PendingRequest>();} break;
+        case 'parkingRequests': {ApplicationStreams.securityScreenMap[key] = List<ParkingRequest>();} break;
+        case 'parkedRequests': {ApplicationStreams.securityScreenMap[key] = List<ParkedRequest>();} break;
+      }
+      ApplicationStreams.securityScreen.add(ApplicationStreams.securityScreenMap);
+    });
   }
 
   _handleData(Event event) {

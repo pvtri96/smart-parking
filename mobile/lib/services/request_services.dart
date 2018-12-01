@@ -13,9 +13,11 @@ class RequestService {
   Future<Request> findParkingLot(String address, double lat, double lng, {bool reFind = false, String requestId = ''}) async{
     FirebaseUser currentUser = await _auth.signInAnonymously();
     String clientId = currentUser.uid;
+    Location currentLocation = Location(address, lat, lng);
+    ApplicationStreams.currentLocation = currentLocation;
 
     Request requestFindParkingLot = Request(clientId, Status.REQUEST_FIND_PARKING_LOT);
-    Payload payload = Payload(location: Location(address, lat, lng));
+    Payload payload = Payload(location: currentLocation);
     requestFindParkingLot.payload = payload;
 
     if (reFind) {

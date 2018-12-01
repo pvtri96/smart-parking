@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:parking_lots/entity/payload.dart';
 import 'package:parking_lots/entity/request.dart';
 import 'package:parking_lots/entity/response.dart';
 import 'package:parking_lots/enum/status.dart';
@@ -28,7 +29,7 @@ class RequestRepository {
     await databaseRef.child(id).update(updateData);
   }
 
-  _handleUpdateEvent(DataSnapshot snapShot) {
+  _handleUpdateEvent(DataSnapshot snapShot) async {
     String key = snapShot.key;
 
     if (key == 'response') {
@@ -54,7 +55,12 @@ class RequestRepository {
       }
       if (status == Status.ACCEPT_CHECK_OUT_PARKING_LOT) {
         ApplicationStreams.getOnMovingBookingToParkingLot().add(status);
-
+        ApplicationStreams.currentRequest.status = Status.FORBIDDEN;
+        await updateRequest(ApplicationStreams.currentRequest.id, ApplicationStreams.currentRequest.toForbiddenJson());
+        String clientId = ApplicationStreams.currentRequest.clientId;
+        ApplicationStreams.closeAllStream();
+        Payload payload = Payload(location: ApplicationStreams.currentLocation);
+        ApplicationStreams.currentRequest = await saveAndSubscribeRequest(Request(clientId, Status.REQUEST_FIND_PARKING_LOT, payload: payload));
       }
       ApplicationStreams.currentClientStatus = status;
     }

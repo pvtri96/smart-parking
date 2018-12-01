@@ -36,9 +36,10 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
   @override
   void initState() {
     super.initState();
-    if (ApplicationStreams.currentRequest.payload.parkingLotId != null && ApplicationStreams.currentRequest.payload.parkingLotId == widget.parkingLot.id) {
+    if (ApplicationStreams.currentRequest.payload.parkingLotId != null &&
+        ApplicationStreams.currentRequest.payload.parkingLotId == widget.parkingLot.id) {
       ApplicationStreams.onMovingBookingToParkingLot.add(ApplicationStreams.currentClientStatus);
-    } else if (ApplicationStreams.currentClientStatus != Status.RESPONSE_FIND_PARKING_LOT){
+    } else if (ApplicationStreams.currentClientStatus != Status.RESPONSE_FIND_PARKING_LOT) {
       _allowRender = false;
     }
   }

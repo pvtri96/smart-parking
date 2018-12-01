@@ -1,15 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter_map/flutter_map.dart';
+import 'package:parking_lots/entity/location.dart';
 import 'package:parking_lots/entity/request.dart';
 import 'package:parking_lots/entity/response.dart';
 
 class ApplicationStreams {
   static Request currentRequest;
+  static Location currentLocation;
 
   static StreamSubscription onRequestChildUpdateSubscription;
   static StreamSubscription onParkingLotsChildUpdateSubscription;
   static StreamSubscription onParkingLotsChildAddSubscription;
+  static StreamSubscription onParkingLotsChildRemovedSubscription;
   static StreamController<Map<String, List>> securityScreen = StreamController();
   static StreamController<Response> onResponseFindingParkingLot = StreamController();
   static StreamController<String> onMovingBookingToParkingLot = StreamController();
@@ -37,6 +40,7 @@ class ApplicationStreams {
 
   static closeSecurityStream() {
     securityScreenMap = Map();
+    onParkingLotsChildRemovedSubscription.cancel();
     onParkingLotsChildAddSubscription.cancel();
     onParkingLotsChildUpdateSubscription.cancel();
     securityScreen.close();
