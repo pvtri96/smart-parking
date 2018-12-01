@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parking_lots/entity/parked_request.dart';
@@ -5,6 +7,8 @@ import 'package:parking_lots/entity/parking_lots.dart';
 import 'package:parking_lots/entity/parking_request.dart';
 import 'package:parking_lots/entity/pending_request.dart';
 import 'package:parking_lots/enum/status.dart';
+import 'package:parking_lots/listeners/application_streams.dart';
+import 'package:parking_lots/services/parking_lots_service.dart';
 import 'package:parking_lots/services/request_services.dart';
 
 class SecurityGuardScreen extends StatefulWidget {
@@ -19,13 +23,7 @@ class SecurityGuardScreen extends StatefulWidget {
 
 class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
   final RequestService _requestService = RequestService();
-
-  List<PendingRequest> _dataPendingRequest;
-  List<ParkingRequest> _dataParkingRequest;
-  List<ParkedRequest> _dataParkedRequest;
-
-  PendingRequest _selectedPendingRequest;
-  ParkingRequest _selectedParkingRequest;
+  final ParkingLotsService _parkingLotsService = ParkingLotsService();
 
   List<Tab> _tabs = <Tab>[
     Tab(
@@ -79,7 +77,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
     DateTime updatedAt = convertToDate(timeStamp);
     return ListTile(
       leading: Icon(Icons.directions_car),
-      title: Text('Client ${slot.clientId}'),
+      title: Text('Ticket ${slot.requestId}'),
       subtitle: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,9 +117,13 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
   @override
   void initState() {
     super.initState();
-    _dataPendingRequest  = widget.parkingLots.pendingRequest;
-    _dataParkingRequest = widget.parkingLots.parkingRequest;
-    _dataParkedRequest = widget.parkingLots.parkedRequest;
+    _parkingLotsService.findAndRegisterById(widget.parkingLots.id);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    ApplicationStreams.closeSecurityStream();
   }
 
   Widget _buildPendingDriversList(List<PendingRequest> data) {
@@ -154,7 +156,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
     if (slot.status == Status.REQUEST_CHECK_IN_PARKING_LOT) {
       return ListTile(
         leading: Icon(Icons.directions_car),
-        title: Text('Client ${slot.clientId}'),
+        title: Text('Ticket ${slot.requestId}'),
         subtitle: Text(
             'Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(
                 updatedAt)}'),
@@ -169,11 +171,6 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
                 onPressed: () async {
                   await _requestService.securityAllowOrRejectCheckIn(
                       slot.requestId, slot.clientId, Status.ACCEPT_CHECK_IN_PARKING_LOT);
-                  setState(() {
-                    _selectedPendingRequest = slot;
-                    _selectedPendingRequest.status = Status.ACCEPT_CHECK_IN_PARKING_LOT;
-                    _dataPendingRequest[index] = _selectedPendingRequest;
-                  });
                 }),
             IconButton(
                 icon: Icon(Icons.cancel),
@@ -182,11 +179,6 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
                 onPressed: () async{
                   await _requestService.securityAllowOrRejectCheckIn(
                       slot.requestId, slot.clientId, Status.REJECT_CHECK_IN_PARKING_LOT);
-                  setState(() {
-                    _selectedPendingRequest = slot;
-                    _selectedPendingRequest.status = Status.REJECT_CHECK_IN_PARKING_LOT;
-                    _dataPendingRequest[index] = _selectedPendingRequest;
-                  });
                 }),
           ],
         ),
@@ -194,7 +186,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
     }
     return ListTile(
       leading: Icon(Icons.directions_car),
-      title: Text('Client ${slot.clientId}'),
+      title: Text('Ticket ${slot.requestId}'),
       subtitle: Text(
           'Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(
               updatedAt)}')
@@ -202,18 +194,27 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
   }
 
   Widget _buildParkingDriversList(List<ParkingRequest> data) {
-    return ListView.builder(itemBuilder: (context, index) {
-      if (index.isOdd) {
-        return Divider();
-      }
+    if (data != null && data.isNotEmpty) {
+      return ListView.builder(itemBuilder: (context, index) {
+        if (index.isOdd) {
+          return Divider();
+        }
 
-      final i = index ~/ 2;
-      // TODO: GET MORE ITEM WHEN SCROLLING DOWN
-      if (i >= data.length) {
-        return ListTile();
-      }
-      return _buildParkingDriver(data[i], i);
-    });
+        final i = index ~/ 2;
+        // TODO: GET MORE ITEM WHEN SCROLLING DOWN
+        if (i >= data.length) {
+          return ListTile();
+        }
+        return _buildParkingDriver(data[i], i);
+      });
+    } else {
+      return Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[Text('No car is parking')],
+        ),
+      );
+    }
   }
 
   Widget _buildParkingDriver(ParkingRequest slot, int index) {
@@ -222,7 +223,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
     if (slot.status == Status.REQUEST_CHECK_OUT_PARKING_LOT) {
       return ListTile(
         leading: Icon(Icons.directions_car),
-        title: Text('Client ${slot.clientId}'),
+        title: Text('Ticket ${slot.requestId}'),
         subtitle:
         Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
         trailing: ButtonBar(
@@ -237,14 +238,6 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
                   await _requestService.securityAllowOrRejectCheckIn(
                       slot.requestId, slot.clientId,
                       Status.ACCEPT_CHECK_OUT_PARKING_LOT);
-                  setState(() {
-                    _selectedParkingRequest = slot;
-                    _selectedParkingRequest.status =
-                        Status.ACCEPT_CHECK_OUT_PARKING_LOT;
-                    _dataParkingRequest[index] = _selectedParkingRequest;
-                    slot.status = Status.ACCEPT_CHECK_OUT_PARKING_LOT;
-                    _dataParkedRequest.add(ParkedRequest.fromMap(slot.toJson()));
-                  });
                 }),
             IconButton(
                 icon: Icon(Icons.cancel),
@@ -254,12 +247,6 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
                   await _requestService.securityAllowOrRejectCheckIn(
                       slot.requestId, slot.clientId,
                       Status.REJECT_CHECK_OUT_PARKING_LOT);
-                  setState(() {
-                    _selectedParkingRequest = slot;
-                    _selectedParkingRequest.status =
-                        Status.REJECT_CHECK_OUT_PARKING_LOT;
-                    _dataParkingRequest[index] = _selectedParkingRequest;
-                  });
                 }),
           ],
         ),
@@ -268,7 +255,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
 
     return ListTile(
       leading: Icon(Icons.directions_car),
-      title: Text('Client ${slot.clientId}'),
+      title: Text('Ticket ${slot.requestId}'),
       subtitle:
       Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
     );
@@ -284,24 +271,39 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
         appBar: AppBar(
           title: Text('Parking lot: ${widget.parkingLots.name}'),
         ),
-        body: DefaultTabController(
-            length: _tabs.length,
-            child: Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                actions: <Widget>[],
-                title: TabBar(
-                  isScrollable: true,
-                  tabs: _tabs,
-                  indicatorColor: Colors.white,
+        body: StreamBuilder(
+          stream: ApplicationStreams.securityScreen.stream,
+          builder: (context, snapshot) {
+            List<PendingRequest> pending = List();
+            List<ParkingRequest> parking = List();
+            List<ParkedRequest> parked = List();
+
+            if (snapshot.hasData && snapshot.data != null) {
+              pending = snapshot.data['pendingRequests'];
+              parking = snapshot.data['parkingRequests'];
+              parked = snapshot.data['parkedRequests'];
+            }
+
+            return DefaultTabController(
+              length: _tabs.length,
+              child: Scaffold(
+                appBar: AppBar(
+                  automaticallyImplyLeading: false,
+                  actions: <Widget>[],
+                  title: TabBar(
+                    isScrollable: true,
+                    tabs: _tabs,
+                    indicatorColor: Colors.white,
+                  ),
                 ),
-              ),
-              body: TabBarView(children: [
-                _buildParkingLotInfo(),
-                _buildPendingDriversList(_dataPendingRequest),
-                _buildParkingDriversList(_dataParkingRequest),
-                _buildParkedDriversList(_dataParkedRequest)
-              ]),
-            )));
+                body: TabBarView(children: [
+                  _buildParkingLotInfo(),
+                  _buildPendingDriversList(pending),
+                  _buildParkingDriversList(parking),
+                  _buildParkedDriversList(parked),
+                ]),
+              ));
+        })
+    );
   }
 }

@@ -5,6 +5,10 @@ class ParkingLotsService {
   final ParkingLotsRepository _parkingLotsRepository = ParkingLotsRepository();
 
   Future<List<ParkingLots>> getAll() async{
-    return _parkingLotsRepository.getAllParkingLot();
+    return await _parkingLotsRepository.getAllParkingLot();
+  }
+
+  Future<void> findAndRegisterById(String id) async {
+    await _parkingLotsRepository.getParkingLotsById(id);
   }
 }

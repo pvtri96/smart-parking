@@ -90,6 +90,7 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
   void dispose() {
     super.dispose();
     _markerStream.close();
+    ApplicationStreams.closeAllStream();
   }
 
   Future<Map<String, double>> _initPlatformState() async {
