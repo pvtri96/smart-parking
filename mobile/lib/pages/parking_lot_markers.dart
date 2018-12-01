@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
+import 'package:parking_lots/entity/parking_lot.dart';
 import 'package:parking_lots/entity/response.dart';
 import 'package:parking_lots/listeners/application_streams.dart';
 import 'package:parking_lots/pages/parking_lot.dart';
@@ -30,7 +31,6 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
   Map<String, double> currentLocation = Map();
   Location location = Location();
   String error;
-  LatLngBounds _bounds;
   Timer _timer;
 
   @override
@@ -39,6 +39,7 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
     mapController = MapController();
     _registerStream();
     _initPlatformState().then((location) {
+      currentLocation = location;
       _requestService
           .findParkingLot('', location['latitude'], location['longitude'])
           .then((request) {
@@ -52,23 +53,7 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
         .listen((Response response) {
       List<Marker> result = List();
       response.parkingLots.forEach((parkingLot) {
-        Marker marker = Marker(
-            width: 35,
-            height: 35,
-            point: LatLng(parkingLot.location.lat, parkingLot.location.lng),
-            builder: (context) => Container(
-                  child: IconButton(
-                      icon: Icon(Icons.location_on),
-                      color: Colors.red,
-                      iconSize: 35,
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    ParkingLotScreen(parkingLot)));
-                      }),
-                ));
+        Marker marker = _buildMarker(parkingLot, Icon(Icons.location_on));
         result.add(marker);
       });
 
@@ -76,13 +61,24 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
     });
   }
 
-  _updatePosition() {
-    _timer = Timer(const Duration(milliseconds: 2000), () {
-      setState(() {
-        _bounds = mapController.bounds;
-      });
-      // TODO: Call API to update parking lots inside the current bounds
-    });
+  Marker _buildMarker(ParkingLot parkingLot, Icon icon) {
+    return Marker(
+        width: 35,
+        height: 35,
+        point: LatLng(parkingLot.location.lat, parkingLot.location.lng),
+        builder: (context) => Container(
+              child: IconButton(
+                  icon: icon,
+                  color: Colors.red,
+                  iconSize: 35,
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ParkingLotScreen(parkingLot)));
+                  }),
+            ));
   }
 
   @override
@@ -153,22 +149,41 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
           child: Column(
             children: <Widget>[
               Padding(
+                padding: EdgeInsets.all(4),
+                child: Row(
+                  children: <Widget>[
+                    ButtonBar(
+                      children: <Widget>[
+                        RaisedButton(
+                          onPressed: () {
+                            mapController.move(
+                                mapController.center, mapController.zoom + 1);
+                          },
+                          child: Icon(
+                            Icons.zoom_in,
+                          ),
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            mapController.move(
+                                mapController.center, mapController.zoom - 1);
+                          },
+                          child: Icon(
+                            Icons.zoom_out,
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
                 padding: EdgeInsets.only(top: 8, bottom: 8),
                 child: Row(
                   children: <Widget>[
                     ButtonBar(
                       alignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        RaisedButton(
-                            child: Text('Get bounds'),
-                            onPressed: () {
-                              final bounds = mapController.bounds;
-
-                              _scaffoldKey.currentState.showSnackBar(SnackBar(
-                                  content: Text('Map bounds: \n'
-                                      'NE: ${bounds.northEast} \n'
-                                      'SW: ${bounds.southWest}')));
-                            }),
                         RaisedButton(
                             child: Text('Find parking lots'),
                             onPressed: () {
@@ -188,7 +203,9 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
                             child: Text('My location'),
                             onPressed: () {
                               _animatedMapMove(
-                                  LatLng(16.041926, 108.241036), 15);
+                                  LatLng(currentLocation['latitude'],
+                                      currentLocation['longitude']),
+                                  14);
                             })
                       ],
                     )
@@ -202,15 +219,26 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
                   if (markers.isEmpty) {
                     return Flexible(child: CircularProgressIndicator());
                   }
+                  markers.add(Marker(
+                      point: LatLng(currentLocation['latitude'],
+                          currentLocation['longitude']),
+                      builder: (context) => Container(
+                            child: IconButton(
+                                icon: Icon(Icons.adjust),
+                                color: Colors.blue,
+                                iconSize: 35,
+                                onPressed: () {}),
+                          )));
                   return Flexible(
                     child: FlutterMap(
                       mapController: mapController,
                       options: MapOptions(
-                          center: LatLng(16.041926, 108.241036),
-                          zoom: 14,
-                          onPositionChanged: (position, hasGesture) {
-                            _updatePosition();
-                          }),
+                        center: LatLng(currentLocation['latitude'],
+                            currentLocation['longitude']),
+                        zoom: 13,
+                        maxZoom: 15,
+                        minZoom: 10,
+                      ),
                       layers: [
                         TileLayerOptions(
                           urlTemplate:

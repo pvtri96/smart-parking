@@ -19,6 +19,8 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
 
   final RequestService _requestService = RequestService();
 
+  String requestStatus;
+
   void _launchNavigationInGoogleMaps() {
     if (Theme.of(context).platform == TargetPlatform.android) {
       final AndroidIntent intent = AndroidIntent(
@@ -30,11 +32,65 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
     }
   }
 
+  List<Widget> _buildActionButtons() {
+    if (requestStatus == Status.MOVING_TO_PARKING_LOT) {
+      return <Widget>[
+        RaisedButton.icon(
+            onPressed: () {
+              _launchNavigationInGoogleMaps();
+            },
+            icon: Icon(Icons.navigation),
+            label: Text('Navigate')),
+        RaisedButton.icon(
+            onPressed: () {
+              // TODO: CHECK IN
+            },
+            icon: Icon(Icons.arrow_forward),
+            label: Text('Check in')),
+      ];
+    }
+
+    return <Widget>[
+      RaisedButton.icon(
+          icon: Icon(Icons.add),
+          label: Text('I want to book here'),
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Booking Confirmation'),
+                    content: Text(
+                        "This parking slot will be kept for you within 30 minutes."
+                        "It will be canceled if you don't check in."),
+                    actions: <Widget>[
+                      FlatButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('Cancel')),
+                      FlatButton(
+                          onPressed: () async {
+                            await _requestService
+                                .bookParkingLot(widget.parkingLot.id);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('Confirm'))
+                    ],
+                  );
+                });
+          })
+    ];
+  }
+
   @override
   void initState() {
     super.initState();
     ApplicationStreams.onMovingBookingToParkingLot.stream.listen((status) {
       if (status == Status.MOVING_TO_PARKING_LOT) {
+        setState(() {
+          requestStatus = Status.MOVING_TO_PARKING_LOT;
+        });
         _launchNavigationInGoogleMaps();
       }
     });
@@ -61,48 +117,18 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
               ),
               ListTile(
                 leading: Icon(Icons.all_inclusive),
-                title:
-                    Text('Total slots: ${widget.parkingLot.capacity}'),
+                title: Text('Total slots: ${widget.parkingLot.capacity}'),
               ),
               ListTile(
                 leading: Icon(Icons.code),
-                title:
-                Text('Your request ID: ${ApplicationStreams.currentRequest.id}'),
+                title: Text(
+                    'Your request ID: ${ApplicationStreams.currentRequest.id}'),
               ),
               Padding(
                 padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
                 child: ButtonBar(
                   alignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    RaisedButton.icon(
-                        icon: Icon(Icons.add),
-                        label: Text('I want to park here'),
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Booking Confirmation'),
-                                  content: Text(
-                                      "This parking slot will be kept for you within 30 minutes."
-                                      "It will be canceled if you don't check in."),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('Cancel')),
-                                    FlatButton(
-                                        onPressed: () async {
-                                          await _requestService.bookParkingLot(widget.parkingLot.id);
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('Confirm'))
-                                  ],
-                                );
-                              });
-                        })
-                  ],
+                  children: _buildActionButtons(),
                 ),
               )
             ],
