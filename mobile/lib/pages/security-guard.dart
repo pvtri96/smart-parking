@@ -27,6 +27,14 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
     DriverEntity(id: 10, clientId: '10', updatedAt: 10)
   ];
 
+  final List<TabEntity> tabs = [
+    TabEntity(title: 'Booking List', icon: Icon(Icons.watch_later)),
+    TabEntity(title: 'Parking List', icon: Icon(Icons.album)),
+  ];
+
+  TabEntity _tabsHandler;
+  TabController _tabController;
+
   Widget _buildPendingDriversList() {
     List<PendingRequest> data = widget.parkingLots.pendingRequest;
     if (data != null && data.isNotEmpty) {
@@ -43,13 +51,12 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
         return _buildPendingDriver(data[i]);
       });
     } else {
-      return ListView.builder(itemBuilder: (context, index) {
-        return ListTile(
-          leading: Icon(Icons.directions_car),
-          title: Text('No data'),
-          subtitle: Text('Nothing to show here'),
-        );
-      });
+      return Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[Text('No car is booking')],
+        ),
+      );
     }
   }
 
@@ -59,7 +66,28 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
     return ListTile(
       leading: Icon(Icons.directions_car),
       title: Text('Client ${slot.clientId}'),
-      subtitle: Text('Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(updatedAt)}'),
+      subtitle: Text(
+          'Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(updatedAt)}'),
+      trailing: ButtonBar(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          IconButton(
+              icon: Icon(Icons.check_circle),
+              color: Color(0xFF2ECC71),
+              splashColor: Color(0xFFB5FFC6),
+              padding: EdgeInsets.all(4),
+              onPressed: () {
+                // TODO: ACCEPT REQUEST
+              }),
+          IconButton(
+              icon: Icon(Icons.cancel),
+              color: Color(0xFFE74C3C),
+              splashColor: Color(0xFFFC9797),
+              onPressed: () {
+                // TODO: REJECT REQUEST
+              }),
+        ],
+      ),
     );
   }
 
@@ -84,7 +112,8 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
     return ListTile(
       leading: Icon(Icons.directions_car),
       title: Text('Client ${slot.clientId}'),
-      subtitle: Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
+      subtitle:
+          Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
     );
   }
 
@@ -129,13 +158,13 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
                     ),
                     ListTile(
                       leading: Icon(Icons.all_inclusive),
-                      title: Text(
-                          'Total slots: ${widget.parkingLots.capacity}'),
+                      title:
+                          Text('Total slots: ${widget.parkingLots.capacity}'),
                     ),
                     ListTile(
                       leading: Icon(Icons.spa),
                       title: Text(
-                          'Booked slots: ${widget.parkingLots.pendingRequest != null ? widget.parkingLots.pendingRequest.length : 0}'),
+                          'Booking slots: ${widget.parkingLots.pendingRequest != null ? widget.parkingLots.pendingRequest.length : 0}'),
                     ),
                     Padding(
                       padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
@@ -164,4 +193,11 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
               ]),
             )));
   }
+}
+
+class TabEntity {
+  final String title;
+  final Icon icon;
+
+  TabEntity({this.title, this.icon});
 }
