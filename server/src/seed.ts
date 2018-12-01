@@ -3,7 +3,6 @@ import * as Fs from 'fs';
 import * as Path from 'path';
 import * as FirebaseConfig from './config/firebase';
 import { FirebaseParkingLot } from './entities';
-import { FirebaseBookingPrice } from './entities/BookingPrice';
 
 bootstrap();
 
@@ -66,20 +65,15 @@ async function initBookingPrices() {
     ).toString(),
   );
 
-  await Promise.all(
-    rawData
-      .map<FirebaseBookingPrice>(({ duration, price, price6, price12 }) => ({
-        duration,
+  const bookingPrices = rawData
+      .reduce((prev, { duration, price, price6, price12 }) => ({
+        ...prev,
+        [duration]: {
+          duration,
         price,
         price6,
         price12,
-      }))
-      .map(bookingPrice => {
-        return new Promise(resolve => {
-          Firebase.database()
-            .ref('bookingPrices')
-            .push(bookingPrice, resolve);
-        });
-      }),
-  );
+        }
+      }), {})
+  Firebase.database().ref("bookingPrices").set(bookingPrices)
 }
