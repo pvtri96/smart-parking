@@ -31,20 +31,23 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
   Map<String, double> currentLocation = Map();
   Location location = Location();
   String error;
-  Timer _timer;
 
   @override
   void initState() {
     super.initState();
     mapController = MapController();
-    _registerStream();
     _initPlatformState().then((location) {
       currentLocation = location;
-      _requestService
-          .findParkingLot('', location['latitude'], location['longitude'])
-          .then((request) {
-        ApplicationStreams.currentRequest = request;
-      });
+      if (ApplicationStreams.currentRequest == null) {
+        _requestService
+            .findParkingLot('', location['latitude'], location['longitude'])
+            .then((request) {
+          ApplicationStreams.currentRequest = request;
+          _registerStream();
+        });
+      } else {
+        _markerStream.add(ApplicationStreams.markers);
+      }
     });
   }
 
@@ -56,6 +59,8 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
         Marker marker = _buildMarker(parkingLot, Icon(Icons.location_on));
         result.add(marker);
       });
+
+      ApplicationStreams.markers = result;
 
       _markerStream.add(result);
     });
@@ -84,9 +89,7 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
   @override
   void dispose() {
     super.dispose();
-    _timer.cancel();
     _markerStream.close();
-    ApplicationStreams.closeAllStream();
   }
 
   Future<Map<String, double>> _initPlatformState() async {

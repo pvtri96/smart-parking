@@ -22,14 +22,14 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
   String requestStatus;
 
   void _launchNavigationInGoogleMaps() {
-    if (Theme.of(context).platform == TargetPlatform.android) {
+
       final AndroidIntent intent = AndroidIntent(
           action: 'action_view',
           data:
               "http://maps.google.com/maps?daddr=${widget.parkingLot.location.lat},${widget.parkingLot.location.lng}",
           package: 'com.google.android.apps.maps');
       intent.launch();
-    }
+
   }
 
   List<Widget> _buildActionButtons() {
@@ -42,11 +42,39 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
             icon: Icon(Icons.navigation),
             label: Text('Navigate')),
         RaisedButton.icon(
-            onPressed: () {
-              // TODO: CHECK IN
+            onPressed: () async{
+              ApplicationStreams.currentRequest = await _requestService.driverCheckIn();
             },
             icon: Icon(Icons.arrow_forward),
             label: Text('Check in')),
+      ];
+    }
+
+    if (requestStatus == Status.REQUEST_CHECK_IN_PARKING_LOT) {
+      return <Widget>[
+        RaisedButton.icon(
+            icon: Icon(Icons.swap_vertical_circle),
+            label: Text('Checking')),
+      ];
+    }
+
+    if (requestStatus == Status.PARKING_IN_PARKING_LOT) {
+      return <Widget>[
+        RaisedButton.icon(
+          icon: Icon(Icons.local_parking),
+          label: Text('Check out'),
+          onPressed: () async {
+            await _requestService.clientRequestCheckout();
+          },
+        ),
+      ];
+    }
+
+    if (requestStatus == Status.REQUEST_CHECK_OUT_PARKING_LOT) {
+      return <Widget>[
+        RaisedButton.icon(
+            icon: Icon(Icons.swap_vertical_circle),
+            label: Text('Waiting')),
       ];
     }
 
@@ -86,20 +114,21 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
   @override
   void initState() {
     super.initState();
-    ApplicationStreams.onMovingBookingToParkingLot.stream.listen((status) {
-      if (status == Status.MOVING_TO_PARKING_LOT) {
+    if (ApplicationStreams.currentRequest != null && !ApplicationStreams.isRegisterMoving) {
+      ApplicationStreams.onMovingBookingToParkingLot.stream.listen((status) {
+        if (status == Status.MOVING_TO_PARKING_LOT) {
+          _launchNavigationInGoogleMaps();
+        }
         setState(() {
-          requestStatus = Status.MOVING_TO_PARKING_LOT;
+          requestStatus = status;
         });
-        _launchNavigationInGoogleMaps();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    ApplicationStreams.closeAllStream();
+      });
+      ApplicationStreams.isRegisterMoving = true;
+    } else {
+      setState(() {
+        requestStatus = ApplicationStreams.currentClientStatus;
+      });
+    }
   }
 
   @override

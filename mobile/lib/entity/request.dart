@@ -30,6 +30,20 @@ class Request {
     };
   }
 
+  toClientRequestCheckInJson() {
+    return {
+      "clientId": this.clientId,
+      "status": this.status,
+    };
+  }
+
+  toSecurityAcceptOrRejectCheckInJson() {
+    return {
+      "clientId": this.clientId,
+      "status": this.status,
+    };
+  }
+
   factory Request.fromMap(Map<dynamic, dynamic> data, String key) {
     return Request(
       data['clientId'].toString(),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:parking_lots/entity/driver.dart';
+import 'package:parking_lots/entity/parked_request.dart';
 import 'package:parking_lots/entity/parking_lots.dart';
+import 'package:parking_lots/entity/parking_request.dart';
 import 'package:parking_lots/entity/pending_request.dart';
+import 'package:parking_lots/enum/status.dart';
+import 'package:parking_lots/services/request_services.dart';
 
 class SecurityGuardScreen extends StatefulWidget {
   static const String route = '/security_guard';
@@ -15,17 +18,15 @@ class SecurityGuardScreen extends StatefulWidget {
 }
 
 class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
-  final _pendingList = <DriverEntity>[
-    DriverEntity(id: 1, clientId: '1', updatedAt: 1),
-    DriverEntity(id: 2, clientId: '2', updatedAt: 2),
-    DriverEntity(id: 3, clientId: '3', updatedAt: 3),
-    DriverEntity(id: 4, clientId: '4', updatedAt: 4),
-    DriverEntity(id: 6, clientId: '6', updatedAt: 6),
-    DriverEntity(id: 7, clientId: '7', updatedAt: 7),
-    DriverEntity(id: 8, clientId: '8', updatedAt: 8),
-    DriverEntity(id: 9, clientId: '9', updatedAt: 9),
-    DriverEntity(id: 10, clientId: '10', updatedAt: 10)
-  ];
+  final RequestService _requestService = RequestService();
+
+  List<PendingRequest> _dataPendingRequest;
+  List<ParkingRequest> _dataParkingRequest;
+  List<ParkedRequest> _dataParkedRequest;
+
+  PendingRequest _selectedPendingRequest;
+  ParkingRequest _selectedParkingRequest;
+
   List<Tab> _tabs = <Tab>[
     Tab(
       child: Column(
@@ -49,8 +50,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
     )
   ];
 
-  Widget _buildPendingDriversList() {
-    List<PendingRequest> data = widget.parkingLots.pendingRequest;
+  Widget _buildParkedDriversList(List<ParkedRequest> data) {
     if (data != null && data.isNotEmpty) {
       return ListView.builder(itemBuilder: (context, index) {
         if (index.isOdd) {
@@ -62,91 +62,19 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
         if (i >= data.length) {
           return ListTile();
         }
-        return _buildPendingDriver(data[i]);
+        return _buildParkedDriver(data[i]);
       });
     } else {
       return Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[Text('No car is booking')],
+          children: <Widget>[Text('No car is here')],
         ),
       );
     }
   }
 
-  Widget _buildPendingDriver(PendingRequest slot) {
-    int timeStamp = slot.updatedAt;
-    DateTime updatedAt = convertToDate(timeStamp);
-    return ListTile(
-      leading: Icon(Icons.directions_car),
-      title: Text('Client ${slot.clientId}'),
-      subtitle: Text(
-          'Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(updatedAt)}'),
-      trailing: ButtonBar(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          IconButton(
-              icon: Icon(Icons.check_circle),
-              color: Color(0xFF2ECC71),
-              splashColor: Color(0xFFB5FFC6),
-              padding: EdgeInsets.all(4),
-              onPressed: () {
-                // TODO: ACCEPT REQUEST
-              }),
-          IconButton(
-              icon: Icon(Icons.cancel),
-              color: Color(0xFFE74C3C),
-              splashColor: Color(0xFFFC9797),
-              onPressed: () {
-                // TODO: REJECT REQUEST
-              }),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildParkingDriversList() {
-    return ListView.builder(itemBuilder: (context, index) {
-      if (index.isOdd) {
-        return Divider();
-      }
-
-      final i = index ~/ 2;
-      // TODO: GET MORE ITEM WHEN SCROLLING DOWN
-      if (i >= _pendingList.length) {
-        return ListTile();
-      }
-      return _buildParkingDriver(_pendingList[i]);
-    });
-  }
-
-  Widget _buildParkedDriversList() {
-    return ListView.builder(itemBuilder: (context, index) {
-      if (index.isOdd) {
-        return Divider();
-      }
-
-      final i = index ~/ 2;
-      // TODO: GET MORE ITEM WHEN SCROLLING DOWN
-      if (i >= _pendingList.length) {
-        return ListTile();
-      }
-      return _buildParkedDriver(_pendingList[i]);
-    });
-  }
-
-  Widget _buildParkingDriver(DriverEntity slot) {
-    int timeStamp = slot.updatedAt;
-    DateTime updatedAt = convertToDate(timeStamp);
-    return ListTile(
-      leading: Icon(Icons.directions_car),
-      title: Text('Client ${slot.clientId}'),
-      subtitle:
-          Text('Checked in: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
-    );
-  }
-
-  Widget _buildParkedDriver(DriverEntity slot) {
+  Widget _buildParkedDriver(ParkedRequest slot) {
     int timeStamp = slot.updatedAt;
     DateTime updatedAt = convertToDate(timeStamp);
     return ListTile(
@@ -183,28 +111,166 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
           leading: Icon(Icons.watch_later),
           title: Text(
               'Booking slots: ${widget.parkingLots.pendingRequest != null ? widget.parkingLots.pendingRequest.length : 0}'),
-        ),
-        Padding(
-          padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
-          child: ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: <Widget>[
-              RaisedButton.icon(
-                  icon: Icon(Icons.arrow_forward),
-                  label: Text('Check in'),
-                  onPressed: () {
-                    // TODO: CHECK IN
-                  }),
-              RaisedButton.icon(
-                  icon: Icon(Icons.arrow_back),
-                  label: Text('Check out'),
-                  onPressed: () {
-                    // TODO: CHECK OUT
-                  })
-            ],
-          ),
         )
       ],
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _dataPendingRequest  = widget.parkingLots.pendingRequest;
+    _dataParkingRequest = widget.parkingLots.parkingRequest;
+    _dataParkedRequest = widget.parkingLots.parkedRequest;
+  }
+
+  Widget _buildPendingDriversList(List<PendingRequest> data) {
+    if (data != null && data.isNotEmpty) {
+      return ListView.builder(itemBuilder: (context, index) {
+        if (index.isOdd) {
+          return Divider();
+        }
+
+        final i = index ~/ 2;
+        // TODO: GET MORE ITEM WHEN SCROLLING DOWN
+        if (i >= data.length) {
+          return ListTile();
+        }
+        return _buildPendingDriver(data[i], i);
+      });
+    } else {
+      return Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[Text('No car is booking')],
+        ),
+      );
+    }
+  }
+
+  Widget _buildPendingDriver(PendingRequest slot, int index) {
+    int timeStamp = slot.updatedAt;
+    DateTime updatedAt = convertToDate(timeStamp);
+    if (slot.status == Status.REQUEST_CHECK_IN_PARKING_LOT) {
+      return ListTile(
+        leading: Icon(Icons.directions_car),
+        title: Text('Client ${slot.clientId}'),
+        subtitle: Text(
+            'Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(
+                updatedAt)}'),
+        trailing: ButtonBar(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            IconButton(
+                icon: Icon(Icons.check_circle),
+                color: Color(0xFF2ECC71),
+                splashColor: Color(0xFFB5FFC6),
+                padding: EdgeInsets.all(4),
+                onPressed: () async {
+                  await _requestService.securityAllowOrRejectCheckIn(
+                      slot.requestId, slot.clientId, Status.ACCEPT_CHECK_IN_PARKING_LOT);
+                  setState(() {
+                    _selectedPendingRequest = slot;
+                    _selectedPendingRequest.status = Status.ACCEPT_CHECK_IN_PARKING_LOT;
+                    _dataPendingRequest[index] = _selectedPendingRequest;
+                  });
+                }),
+            IconButton(
+                icon: Icon(Icons.cancel),
+                color: Color(0xFFE74C3C),
+                splashColor: Color(0xFFFC9797),
+                onPressed: () async{
+                  await _requestService.securityAllowOrRejectCheckIn(
+                      slot.requestId, slot.clientId, Status.REJECT_CHECK_IN_PARKING_LOT);
+                  setState(() {
+                    _selectedPendingRequest = slot;
+                    _selectedPendingRequest.status = Status.REJECT_CHECK_IN_PARKING_LOT;
+                    _dataPendingRequest[index] = _selectedPendingRequest;
+                  });
+                }),
+          ],
+        ),
+      );
+    }
+    return ListTile(
+      leading: Icon(Icons.directions_car),
+      title: Text('Client ${slot.clientId}'),
+      subtitle: Text(
+          'Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(
+              updatedAt)}')
+    );
+  }
+
+  Widget _buildParkingDriversList(List<ParkingRequest> data) {
+    return ListView.builder(itemBuilder: (context, index) {
+      if (index.isOdd) {
+        return Divider();
+      }
+
+      final i = index ~/ 2;
+      // TODO: GET MORE ITEM WHEN SCROLLING DOWN
+      if (i >= data.length) {
+        return ListTile();
+      }
+      return _buildParkingDriver(data[i], i);
+    });
+  }
+
+  Widget _buildParkingDriver(ParkingRequest slot, int index) {
+    int timeStamp = slot.updatedAt;
+    DateTime updatedAt = convertToDate(timeStamp);
+    if (slot.status == Status.REQUEST_CHECK_OUT_PARKING_LOT) {
+      return ListTile(
+        leading: Icon(Icons.directions_car),
+        title: Text('Client ${slot.clientId}'),
+        subtitle:
+        Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
+        trailing: ButtonBar(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            IconButton(
+                icon: Icon(Icons.check_circle),
+                color: Color(0xFF2ECC71),
+                splashColor: Color(0xFFB5FFC6),
+                padding: EdgeInsets.all(4),
+                onPressed: () async {
+                  await _requestService.securityAllowOrRejectCheckIn(
+                      slot.requestId, slot.clientId,
+                      Status.ACCEPT_CHECK_OUT_PARKING_LOT);
+                  setState(() {
+                    _selectedParkingRequest = slot;
+                    _selectedParkingRequest.status =
+                        Status.ACCEPT_CHECK_OUT_PARKING_LOT;
+                    _dataParkingRequest[index] = _selectedParkingRequest;
+                    slot.status = Status.ACCEPT_CHECK_OUT_PARKING_LOT;
+                    _dataParkedRequest.add(ParkedRequest.fromMap(slot.toJson()));
+                  });
+                }),
+            IconButton(
+                icon: Icon(Icons.cancel),
+                color: Color(0xFFE74C3C),
+                splashColor: Color(0xFFFC9797),
+                onPressed: () async {
+                  await _requestService.securityAllowOrRejectCheckIn(
+                      slot.requestId, slot.clientId,
+                      Status.REJECT_CHECK_OUT_PARKING_LOT);
+                  setState(() {
+                    _selectedParkingRequest = slot;
+                    _selectedParkingRequest.status =
+                        Status.REJECT_CHECK_OUT_PARKING_LOT;
+                    _dataParkingRequest[index] = _selectedParkingRequest;
+                  });
+                }),
+          ],
+        ),
+      );
+    }
+
+    return ListTile(
+      leading: Icon(Icons.directions_car),
+      title: Text('Client ${slot.clientId}'),
+      subtitle:
+      Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
     );
   }
 
@@ -232,9 +298,9 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
               ),
               body: TabBarView(children: [
                 _buildParkingLotInfo(),
-                _buildPendingDriversList(),
-                _buildParkingDriversList(),
-                _buildParkedDriversList()
+                _buildPendingDriversList(_dataPendingRequest),
+                _buildParkingDriversList(_dataParkingRequest),
+                _buildParkedDriversList(_dataParkedRequest)
               ]),
             )));
   }

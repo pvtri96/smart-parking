@@ -47,11 +47,15 @@ class RequestRepository {
     if (key == 'status') {
       String status = snapShot.value;
       if (status == Status.RESPONSE_FIND_PARKING_LOT) {
-        ApplicationStreams.onResponseFindingParkingLot.add(_response);
+        ApplicationStreams.getOnResponseFindingParkingLot().add(_response);
       }
-      if (status == Status.MOVING_TO_PARKING_LOT) {
-        ApplicationStreams.onMovingBookingToParkingLot.add(status);
+      if (status == Status.MOVING_TO_PARKING_LOT || status == Status.REQUEST_CHECK_IN_PARKING_LOT || status == Status.REQUEST_CHECK_OUT_PARKING_LOT) {
+        ApplicationStreams.getOnMovingBookingToParkingLot().add(status);
       }
+      if (status == Status.ACCEPT_CHECK_OUT_PARKING_LOT) {
+        ApplicationStreams.closeAllStream();
+      }
+      ApplicationStreams.currentClientStatus = status;
     }
   }
 }

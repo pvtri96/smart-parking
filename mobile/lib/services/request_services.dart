@@ -38,4 +38,32 @@ class RequestService {
 
     return request;
   }
+
+  Future<Request> driverCheckIn() async{
+    Request request = ApplicationStreams.currentRequest;
+    request.status = Status.REQUEST_CHECK_IN_PARKING_LOT;
+
+    await _requestRepository.updateRequest(request.id, request.toClientRequestCheckInJson());
+
+    return request;
+  }
+
+  Future<Request> securityAllowOrRejectCheckIn(String requestId, String clientId, String status) async {
+    Request request = Request(clientId, status);
+    request.id = requestId;
+
+    await _requestRepository.updateRequest(
+        request.id, request.toSecurityAcceptOrRejectCheckInJson());
+
+    return request;
+  }
+
+  Future<Request> clientRequestCheckout() async{
+    Request request = ApplicationStreams.currentRequest;
+    request.status = Status.REQUEST_CHECK_OUT_PARKING_LOT;
+
+    await _requestRepository.updateRequest(request.id, request.toClientRequestCheckInJson());
+
+    return request;
+  }
 }
