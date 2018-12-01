@@ -14,5 +14,8 @@ class ApplicationStreams {
     onResponseFindingParkingLot.close();
     onRequestChildUpdateSubscription.cancel();
     onMovingBookingToParkingLot.close();
+
+    onResponseFindingParkingLot = new StreamController();
+    onMovingBookingToParkingLot = new StreamController();
   }
 }

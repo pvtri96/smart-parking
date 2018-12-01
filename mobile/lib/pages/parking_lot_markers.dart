@@ -86,8 +86,7 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
     super.dispose();
     _timer.cancel();
     _markerStream.close();
-    ApplicationStreams.onRequestChildUpdateSubscription.cancel();
-    ApplicationStreams.onResponseFindingParkingLot.close();
+    ApplicationStreams.closeAllStream();
   }
 
   Future<Map<String, double>> _initPlatformState() async {

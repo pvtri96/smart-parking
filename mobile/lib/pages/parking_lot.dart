@@ -99,7 +99,7 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
   @override
   void dispose() {
     super.dispose();
-    ApplicationStreams.onMovingBookingToParkingLot.close();
+    ApplicationStreams.closeAllStream();
   }
 
   @override
