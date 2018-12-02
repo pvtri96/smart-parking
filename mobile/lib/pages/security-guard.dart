@@ -8,6 +8,7 @@ import 'package:parking_lots/enum/status.dart';
 import 'package:parking_lots/listeners/application_streams.dart';
 import 'package:parking_lots/services/parking_lots_service.dart';
 import 'package:parking_lots/services/request_services.dart';
+import 'package:parking_lots/services/booking_prices_service.dart';
 
 class SecurityGuardScreen extends StatefulWidget {
   static const String route = '/security_guard';
@@ -22,6 +23,7 @@ class SecurityGuardScreen extends StatefulWidget {
 class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
   final RequestService _requestService = RequestService();
   final ParkingLotsService _parkingLotsService = ParkingLotsService();
+  final BookingPricesService _bookingPricesService = BookingPricesService();
 
   List<Tab> _tabs = <Tab>[
     Tab(
@@ -224,7 +226,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
         leading: Icon(Icons.directions_car),
         title: Text('Ticket ${slot.requestId}'),
         subtitle:
-            Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
+            Text('Updated at: ${DateFormat('HH:mm dd/MM/yyyy').format(updatedAt)}'),
         trailing: ButtonBar(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -258,7 +260,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
       leading: Icon(Icons.directions_car),
       title: Text('Ticket ${slot.requestId}'),
       subtitle:
-          Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
+          Text('Updated at: ${DateFormat('HH:mm dd/MM/yyyy').format(updatedAt)}'),
     );
   }
 
