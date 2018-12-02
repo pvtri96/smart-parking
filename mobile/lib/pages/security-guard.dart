@@ -104,11 +104,6 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
         ListTile(
           leading: Icon(Icons.directions_car),
           title: Text('Total slots: ${widget.parkingLots.capacity}'),
-        ),
-        ListTile(
-          leading: Icon(Icons.watch_later),
-          title: Text(
-              'Booking slots: ${widget.parkingLots.pendingRequest != null ? widget.parkingLots.pendingRequest.length : 0}'),
         )
       ],
     );
