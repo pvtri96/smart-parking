@@ -44,6 +44,11 @@ const defaultBoundary: Boundary = {
   },
 };
 
+function sleep(timeout: number) {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout)
+  });
+}
 export const FindParkingLotDescriptor = requestTypeCreator<Payload, Response>(
   RequestStatus.REQUEST_FIND_PARKING_LOT,
   async request => {
@@ -82,6 +87,8 @@ export const FindParkingLotDescriptor = requestTypeCreator<Payload, Response>(
     matrixParkingLots = matrixParkingLots
       .sort((a, b) => a.duration.value - b.duration.value)
       .filter((_, index) => index < 20);
+
+    await sleep(2000);
 
     return {
       ...request,
