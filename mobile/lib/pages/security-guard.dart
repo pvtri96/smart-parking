@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parking_lots/entity/parked_request.dart';
@@ -66,7 +64,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
       return Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[Text('No car is here')],
+          children: <Widget>[Text('No cars here')],
         ),
       );
     }
@@ -158,8 +156,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
         leading: Icon(Icons.directions_car),
         title: Text('Ticket ${slot.requestId}'),
         subtitle: Text(
-            'Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(
-                updatedAt)}'),
+            'Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(updatedAt)}'),
         trailing: ButtonBar(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -170,27 +167,29 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
                 padding: EdgeInsets.all(4),
                 onPressed: () async {
                   await _requestService.securityAllowOrRejectCheckIn(
-                      slot.requestId, slot.clientId, Status.ACCEPT_CHECK_IN_PARKING_LOT);
+                      slot.requestId,
+                      slot.clientId,
+                      Status.ACCEPT_CHECK_IN_PARKING_LOT);
                 }),
             IconButton(
                 icon: Icon(Icons.cancel),
                 color: Color(0xFFE74C3C),
                 splashColor: Color(0xFFFC9797),
-                onPressed: () async{
+                onPressed: () async {
                   await _requestService.securityAllowOrRejectCheckIn(
-                      slot.requestId, slot.clientId, Status.REJECT_CHECK_IN_PARKING_LOT);
+                      slot.requestId,
+                      slot.clientId,
+                      Status.REJECT_CHECK_IN_PARKING_LOT);
                 }),
           ],
         ),
       );
     }
     return ListTile(
-      leading: Icon(Icons.directions_car),
-      title: Text('Ticket ${slot.requestId}'),
-      subtitle: Text(
-          'Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(
-              updatedAt)}')
-    );
+        leading: Icon(Icons.directions_car),
+        title: Text('Ticket ${slot.requestId}'),
+        subtitle: Text(
+            'Last update at: ${DateFormat('HH:mm dd/MM/yyyy').format(updatedAt)}'));
   }
 
   Widget _buildParkingDriversList(List<ParkingRequest> data) {
@@ -225,7 +224,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
         leading: Icon(Icons.directions_car),
         title: Text('Ticket ${slot.requestId}'),
         subtitle:
-        Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
+            Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
         trailing: ButtonBar(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -236,7 +235,8 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
                 padding: EdgeInsets.all(4),
                 onPressed: () async {
                   await _requestService.securityAllowOrRejectCheckIn(
-                      slot.requestId, slot.clientId,
+                      slot.requestId,
+                      slot.clientId,
                       Status.ACCEPT_CHECK_OUT_PARKING_LOT);
                 }),
             IconButton(
@@ -245,7 +245,8 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
                 splashColor: Color(0xFFFC9797),
                 onPressed: () async {
                   await _requestService.securityAllowOrRejectCheckIn(
-                      slot.requestId, slot.clientId,
+                      slot.requestId,
+                      slot.clientId,
                       Status.REJECT_CHECK_OUT_PARKING_LOT);
                 }),
           ],
@@ -257,7 +258,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
       leading: Icon(Icons.directions_car),
       title: Text('Ticket ${slot.requestId}'),
       subtitle:
-      Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
+          Text('Updated at: ${DateFormat('dd/MM/yyyy').format(updatedAt)}'),
     );
   }
 
@@ -274,39 +275,38 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
           elevation: 0.0,
         ),
         body: StreamBuilder(
-          stream: ApplicationStreams.securityScreen.stream,
-          builder: (context, snapshot) {
-            List<PendingRequest> pending = List();
-            List<ParkingRequest> parking = List();
-            List<ParkedRequest> parked = List();
+            stream: ApplicationStreams.securityScreen.stream,
+            builder: (context, snapshot) {
+              List<PendingRequest> pending = List();
+              List<ParkingRequest> parking = List();
+              List<ParkedRequest> parked = List();
 
-            if (snapshot.hasData && snapshot.data != null) {
-              pending = snapshot.data['pendingRequests'];
-              parking = snapshot.data['parkingRequests'];
-              parked = snapshot.data['parkedRequests'];
-            }
+              if (snapshot.hasData && snapshot.data != null) {
+                pending = snapshot.data['pendingRequests'];
+                parking = snapshot.data['parkingRequests'];
+                parked = snapshot.data['parkedRequests'];
+              }
 
-            return DefaultTabController(
-              length: _tabs.length,
-              child: Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Colors.orange,
-                  automaticallyImplyLeading: false,
-                  actions: <Widget>[],
-                  title: TabBar(
-                    isScrollable: true,
-                    tabs: _tabs,
-                    indicatorColor: Colors.white,
-                  ),
-                ),
-                body: TabBarView(children: [
-                  _buildParkingLotInfo(),
-                  _buildPendingDriversList(pending),
-                  _buildParkingDriversList(parking),
-                  _buildParkedDriversList(parked),
-                ]),
-              ));
-        })
-    );
+              return DefaultTabController(
+                  length: _tabs.length,
+                  child: Scaffold(
+                    appBar: AppBar(
+                      backgroundColor: Colors.orange,
+                      automaticallyImplyLeading: false,
+                      actions: <Widget>[],
+                      title: TabBar(
+                        isScrollable: true,
+                        tabs: _tabs,
+                        indicatorColor: Colors.white,
+                      ),
+                    ),
+                    body: TabBarView(children: [
+                      _buildParkingLotInfo(),
+                      _buildPendingDriversList(pending),
+                      _buildParkingDriversList(parking),
+                      _buildParkedDriversList(parked),
+                    ]),
+                  ));
+            }));
   }
 }

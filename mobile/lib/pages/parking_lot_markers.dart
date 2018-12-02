@@ -144,83 +144,33 @@ class _ParkingLotMarkersState extends State<ParkingLotMarkers>
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text('Home'),
+          title: Text('F.E.S'),
         ),
         drawer: buildDrawer(context, ParkingLotMarkers.route),
+        floatingActionButton: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            FloatingActionButton(
+              onPressed: () {
+                _animatedMapMove(
+                    LatLng(currentLocation['latitude'],
+                        currentLocation['longitude']),
+                    14);
+              },
+              child: Icon(Icons.my_location),
+            ),
+          ],
+        ),
         body: Padding(
           padding: EdgeInsets.all(0),
           child: Column(
             children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(4),
-                child: Row(
-                  children: <Widget>[
-                    ButtonBar(
-                      children: <Widget>[
-                        RaisedButton(
-                          onPressed: () {
-                            mapController.move(
-                                mapController.center, mapController.zoom + 1);
-                          },
-                          child: Icon(
-                            Icons.zoom_in,
-                          ),
-                        ),
-                        RaisedButton(
-                          onPressed: () {
-                            mapController.move(
-                                mapController.center, mapController.zoom - 1);
-                          },
-                          child: Icon(
-                            Icons.zoom_out,
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 8, bottom: 8),
-                child: Row(
-                  children: <Widget>[
-                    ButtonBar(
-                      alignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        RaisedButton(
-                            child: Text('Find parking lots'),
-                            onPressed: () {
-                              _initPlatformState().then((location) {
-                                _requestService
-                                    .findParkingLot('', location['latitude'],
-                                        location['longitude'],
-                                        reFind: true,
-                                        requestId: ApplicationStreams
-                                            .currentRequest.id)
-                                    .then((request) {
-                                  ApplicationStreams.currentRequest = request;
-                                });
-                              });
-                            }),
-                        RaisedButton(
-                            child: Text('My location'),
-                            onPressed: () {
-                              _animatedMapMove(
-                                  LatLng(currentLocation['latitude'],
-                                      currentLocation['longitude']),
-                                  14);
-                            })
-                      ],
-                    )
-                  ],
-                ),
-              ),
               StreamBuilder(
                 stream: _markerStream.stream,
                 builder: (context, snapShot) {
                   List<Marker> markers = snapShot.data ?? List();
                   if (markers.isEmpty) {
-                    return Flexible(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator());
                   }
                   markers.add(Marker(
                       point: LatLng(currentLocation['latitude'],

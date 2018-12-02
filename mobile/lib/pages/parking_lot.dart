@@ -2,12 +2,16 @@ import 'dart:async';
 
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong/latlong.dart';
 import 'package:parking_lots/entity/parking_lot.dart';
 import 'package:parking_lots/enum/status.dart';
 import 'package:parking_lots/listeners/application_streams.dart';
 import 'package:parking_lots/services/request_services.dart';
 
 class ParkingLotScreen extends StatefulWidget {
+  static const String mapBoxAccessToken =
+      'pk.eyJ1IjoiZHVuZ2xlMTgxMSIsImEiOiJjam93b2NrYXIxdG93M3Fsa3J3MXNjMDFlIn0.paMZmOKnCnZU_NBU3qfxtQ';
   final ParkingLot parkingLot;
 
   ParkingLotScreen(this.parkingLot);
@@ -23,23 +27,26 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
 
   String requestStatus = ApplicationStreams.currentClientStatus;
   bool _allowRender = true;
-  
+
   void _launchNavigationInGoogleMaps() {
-      final AndroidIntent intent = AndroidIntent(
-          action: 'action_view',
-          data:
-              "http://maps.google.com/maps?daddr=${widget.parkingLot.location.lat},${widget.parkingLot.location.lng}",
-          package: 'com.google.android.apps.maps');
-      intent.launch();
+    final AndroidIntent intent = AndroidIntent(
+        action: 'action_view',
+        data:
+            "http://maps.google.com/maps?daddr=${widget.parkingLot.location.lat},${widget.parkingLot.location.lng}",
+        package: 'com.google.android.apps.maps');
+    intent.launch();
   }
 
   @override
   void initState() {
     super.initState();
     if (ApplicationStreams.currentRequest.payload.parkingLotId != null &&
-        ApplicationStreams.currentRequest.payload.parkingLotId == widget.parkingLot.id) {
-      ApplicationStreams.onMovingBookingToParkingLot.add(ApplicationStreams.currentClientStatus);
-    } else if (ApplicationStreams.currentClientStatus != Status.RESPONSE_FIND_PARKING_LOT) {
+        ApplicationStreams.currentRequest.payload.parkingLotId ==
+            widget.parkingLot.id) {
+      ApplicationStreams.onMovingBookingToParkingLot
+          .add(ApplicationStreams.currentClientStatus);
+    } else if (ApplicationStreams.currentClientStatus !=
+        Status.RESPONSE_FIND_PARKING_LOT) {
       _allowRender = false;
     }
   }
@@ -54,8 +61,9 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
             icon: Icon(Icons.navigation),
             label: Text('Navigate')),
         RaisedButton.icon(
-            onPressed: () async{
-              ApplicationStreams.currentRequest = await _requestService.driverCheckIn();
+            onPressed: () async {
+              ApplicationStreams.currentRequest =
+                  await _requestService.driverCheckIn();
             },
             icon: Icon(Icons.arrow_forward),
             label: Text('Check in')),
@@ -65,8 +73,10 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
     if (status == Status.REQUEST_CHECK_IN_PARKING_LOT) {
       return <Widget>[
         RaisedButton.icon(
-            icon: Icon(Icons.swap_vertical_circle),
-            label: Text('Checking')),
+          icon: Icon(Icons.swap_vertical_circle),
+          label: Text('Checking'),
+          onPressed: null,
+        ),
       ];
     }
 
@@ -85,8 +95,10 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
     if (status == Status.REQUEST_CHECK_OUT_PARKING_LOT) {
       return <Widget>[
         RaisedButton.icon(
-            icon: Icon(Icons.swap_vertical_circle),
-            label: Text('Waiting')),
+          icon: Icon(Icons.swap_vertical_circle),
+          label: Text('Waiting'),
+          onPressed: null,
+        ),
       ];
     }
 
@@ -138,34 +150,80 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
             title: Text('Parking lot: ${widget.parkingLot.name}'),
           ),
           body: Container(
-            child: ListView(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                ListTile(
-                  leading: Icon(Icons.place),
-                  title: Text('Address: ${widget.parkingLot.location.address}'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.directions_car),
-                  title: Text('Total slots: ${widget.parkingLot.capacity}'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.person),
-                  title: Text(
-                      'Your request ID: ${ApplicationStreams.currentRequest
-                          .id}'),
-                ),
-                StreamBuilder(
-                  stream: ApplicationStreams.onMovingBookingToParkingLot.stream,
-                  builder: (context, snapshot) {
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
-                      child: ButtonBar(
-                        alignment: MainAxisAlignment.center,
-                        children: _buildActionButtons(snapshot.data),
+                Expanded(
+                  child: FlutterMap(
+                    options: MapOptions(
+                        interactive: false,
+                        onTap: null,
+                        zoom: 13,
+                        maxZoom: 15,
+                        center: LatLng(widget.parkingLot.location.lat,
+                            widget.parkingLot.location.lng)),
+                    layers: [
+                      TileLayerOptions(
+                        urlTemplate:
+                            'https://api.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}',
+                        additionalOptions: {
+                          'accessToken': ParkingLotScreen.mapBoxAccessToken,
+                          'id': 'mapbox.streets',
+                        },
                       ),
-                    );
-                  },
-                )
+                      MarkerLayerOptions(markers: <Marker>[
+                        Marker(
+                            point: LatLng(widget.parkingLot.location.lat,
+                                widget.parkingLot.location.lng),
+                            builder: (context) => Container(
+                                  child: IconButton(
+                                      icon: Icon(Icons.location_on),
+                                      color: Colors.red,
+                                      iconSize: 35,
+                                      onPressed: () {}),
+                                ))
+                      ])
+                    ],
+                  ),
+                ),
+                Expanded(
+                    child: ListView(children: <Widget>[
+                  StreamBuilder(
+                    stream:
+                        ApplicationStreams.onMovingBookingToParkingLot.stream,
+                    builder: (context, snapshot) {
+                      return Padding(
+                        padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                        child: ButtonBar(
+                          alignment: MainAxisAlignment.center,
+                          children: _buildActionButtons(snapshot.data),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text(
+                        'Your request ID: ${ApplicationStreams.currentRequest.id}'),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.place),
+                    title:
+                        Text('Address: ${widget.parkingLot.location.address}'),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.directions),
+                    title: Text('Distance: ${widget.parkingLot.distance.text}'),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.directions_car),
+                    title: Text('Duration: ${widget.parkingLot.duration.text}'),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.change_history),
+                    title: Text('Total slots: ${widget.parkingLot.capacity}'),
+                  ),
+                ])),
               ],
             ),
           ));
@@ -174,9 +232,10 @@ class _ParkingLotScreenState extends State<ParkingLotScreen> {
           appBar: AppBar(
             title: Text('Parking lot: ${widget.parkingLot.name}'),
           ),
-          body: Container(
-            child: Text('You are not allow to book here, finish your booking first'),
-          )); 
+          body: Center(
+            child: Text(
+                'You are not allow to book here, finish your booking first'),
+          ));
     }
   }
 }
