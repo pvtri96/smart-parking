@@ -7,7 +7,7 @@ export const ForbiddenRequestDescriptor = requestTypeCreator(
   async (request, requestId) => {
     const lots = await findAllParkingLots();
     await Promise.all(
-      lots.map(async lot => {
+      lots.map(lot => {
         if (lot.pendingRequests) {
           lot.pendingRequests = lot.pendingRequests.filter(pendingRequest => {
             if (pendingRequest.requestId === requestId) {
@@ -27,7 +27,7 @@ export const ForbiddenRequestDescriptor = requestTypeCreator(
           });
         }
 
-        await updateParkingLot(lot.id, () => lot);
+        return updateParkingLot(lot.id, () => lot);
       }),
     );
 

@@ -10,6 +10,11 @@ import {
   RejectCheckInDescriptor,
   RequestCheckInDescriptor,
 } from './parking/check-in';
+import {
+  AcceptCheckOutDescriptor,
+  RejectCheckOutDescriptor,
+  RequestCheckOutDescriptor
+} from './parking/check-out';
 import { FindParkingLotDescriptor } from './parking/findParkingLots';
 
 export const requestDescriptors: RequestDescriptor[] = [
@@ -21,4 +26,7 @@ export const requestDescriptors: RequestDescriptor[] = [
   AcceptCheckInDescriptor,
   RejectCheckInDescriptor,
   RequestCheckInDescriptor,
+  AcceptCheckOutDescriptor,
+  RejectCheckOutDescriptor,
+  RequestCheckOutDescriptor
 ];
