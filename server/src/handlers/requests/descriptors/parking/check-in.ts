@@ -131,7 +131,18 @@ export const RejectCheckInDescriptor = requestTypeCreator<
   RejectCheckInData
 >(
   RequestStatus.REJECT_CHECK_IN_PARKING_LOT,
-  async request => {
+  async (request, requestId) => {
+
+    await updateParkingLot(request.data.parkingLotId, parkingLot => {
+      let pendingRequests = parkingLot.pendingRequests || [];
+      pendingRequests = pendingRequests.filter(req => req.requestId !== requestId);
+
+      return {
+        ...parkingLot,
+        pendingRequests,
+      };
+    });
+
     return {
       ...request,
       status: RequestStatus.FORBIDDEN,

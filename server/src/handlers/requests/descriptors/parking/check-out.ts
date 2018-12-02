@@ -132,11 +132,21 @@ export const RejectCheckOutDescriptor = requestTypeCreator<
   RejectCheckOutData
 >(
   RequestStatus.REJECT_CHECK_OUT_PARKING_LOT,
-  async request => {
+  async (request, requestId) => {
+    await updateParkingLot(request.data.parkingLotId, parkingLot => {
+      let parkingRequests = parkingLot.parkingRequests || [];
+      parkingRequests = parkingRequests.filter(req => req.requestId !== requestId);
+
+      return {
+        ...parkingLot,
+        parkingRequests,
+      };
+    });
+
     return {
       ...request,
       status: RequestStatus.FORBIDDEN,
-      response: {},
+      response: {}
     };
   },
   request => {
