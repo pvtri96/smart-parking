@@ -5,7 +5,7 @@ class BookingPricesRepository {
   final DatabaseReference _bookingPricesRef = FirebaseDatabase.instance.reference().child(BookingPrice.COLLECTION_NAME);
 
   Future<BookingPrice> getBookingPriceByDuration(int duration) async {
-    DataSnapshot snapshot = await _bookingPricesRef().child(duration).once();
+    DataSnapshot snapshot = await _bookingPricesRef.child(duration.toString()).once();
     Map<dynamic, dynamic> data = snapshot.value;
     BookingPrice bookingPrice = BookingPrice.fromMap(data);
     return bookingPrice;
