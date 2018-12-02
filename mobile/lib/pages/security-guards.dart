@@ -68,6 +68,7 @@ class _SecurityGuardsState extends State<SecurityGuards> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Parking lot List'),
+          backgroundColor: Colors.orange,
         ),
         drawer: buildDrawer(context, SecurityGuards.route),
         body: StreamBuilder(

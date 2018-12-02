@@ -270,6 +270,8 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Parking lot: ${widget.parkingLots.name}'),
+          backgroundColor: Colors.orange,
+          elevation: 0.0,
         ),
         body: StreamBuilder(
           stream: ApplicationStreams.securityScreen.stream,
@@ -288,6 +290,7 @@ class _SecurityGuardScreenState extends State<SecurityGuardScreen> {
               length: _tabs.length,
               child: Scaffold(
                 appBar: AppBar(
+                  backgroundColor: Colors.orange,
                   automaticallyImplyLeading: false,
                   actions: <Widget>[],
                   title: TabBar(
